@@ -1,0 +1,170 @@
+Question:
+position := initial + rate * 60 - distance / time
+The compiler will understand it as:
+position := (initial + (rate * 60)) - (distance / time)
+
+Phase 1: Lexical Analysis
+Tokens:
+<id,1> <:= > <id,2> <+> <id,3> <*> <60> <-> <id,4> </> <id,5>
+
+<id,1> = position
+<:= >  = assignment operator
+<id,2> = initial
+<+>    = addition operator
+<id,3> = rate
+<*>    = multiplication operator
+<60>   = constant
+<->    = subtraction operator
+<id,4> = distance
+</>    = division operator
+<id,5> = time
+
+So after lexical analysis:
+id1 := id2 + id3 * 60 - id4 / id5
+
+
+Phase 2: Syntax Analysis
+
+The syntax analyzer checks the grammatical structure and creates a parse tree.
+
+Since * and / have higher precedence, the compiler groups the expression like this:
+id1 := ((id2 + (id3 * 60)) - (id4 / id5))
+
+Parse Tree:
+
+                    :=
+                  /    \
+               id1      -
+                       /   \
+                      +     /
+                    /  \   / \
+                 id2   * id4 id5
+                      / \
+                    id3  60
+
+
+rate * 60 is done first
+distance / time is done first
+initial + rate * 60 is done next
+then subtraction is done
+finally result is assigned to position
+
+Phase 3: Semantic Analysis
+
+The semantic analyzer checks the meaning of the statement.
+
+It checks:
+Is position declared?
+Is initial declared?
+Is rate declared?
+Is distance declared?
+Is time declared?
+Are the data types compatible?
+Can the final result be assigned to position?
+
+Assume all variables are declared as float:
+float position, initial, rate, distance, time;
+
+But 60 is an integer constant. Since rate is float, the compiler converts:
+60 → 60.0
+
+So the semantic form becomes:
+position := initial + rate * inttofloat(60) - distance / time
+or simply:
+position := initial + rate * 60.0 - distance / time
+Annotated Parse Tree:
+
+                    :=
+                  /    \
+               id1      -
+                       /   \
+                      +     /
+                    /  \   / \
+                 id2   * id4 id5
+                      / \
+                    id3 inttofloat
+                          |
+                         60
+
+
+Phase 4: Intermediate Code Generation
+
+The compiler now generates three-address code.
+
+Each instruction has at most one operator on the right side.
+
+temp1 := inttofloat(60)
+temp2 := id3 * temp1
+temp3 := id4 / id5
+temp4 := id2 + temp2
+temp5 := temp4 - temp3
+id1 := temp5
+
+Using original variable names:
+
+temp1 := inttofloat(60)
+temp2 := rate * temp1
+temp3 := distance / time
+temp4 := initial + temp2
+temp5 := temp4 - temp3
+position := temp5
+
+Phase 5: Code Optimization
+
+The optimizer removes unnecessary steps and makes the code shorter.
+
+Before optimization:
+
+temp1 := inttofloat(60)
+temp2 := rate * temp1
+temp3 := distance / time
+temp4 := initial + temp2
+temp5 := temp4 - temp3
+position := temp5
+
+After optimization:
+temp1 := rate * 60.0
+temp2 := distance / time
+temp3 := initial + temp1
+position := temp3 - temp2
+
+Here, the compiler directly uses 60.0 instead of creating a separate temporary variable for inttofloat(60).
+
+
+Phase 6: Code Generation
+
+Now the compiler generates assembly like target code.
+
+MOVF R1, id3
+MULF R1, #60.0
+MOVF R2, id4
+DIVF R2, id5
+MOVF R3, id2
+ADDF R3, R1
+SUBF R3, R2
+MOVF id1, R3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
