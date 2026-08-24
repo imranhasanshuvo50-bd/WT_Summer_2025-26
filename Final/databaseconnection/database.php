@@ -119,11 +119,24 @@ if ($_SERVER["REQUEST_METHOD"]=="POST")
         }
         }
  
-             }
+     }
+
+     if(isset($_POST["delete"])) {
+        $searchTerm = $_POST["search"];
+        if (empty($searchTerm)) {
+            echo "Please enter a term to delete.";
+        } else {
+            $sql = "DELETE FROM student WHERE name='$searchTerm'";
+            if (mysqli_query($conn, $sql)) {
+                echo "Record deleted successfully.";
+            } else {
+                echo "Error deleting record: " . mysqli_error($conn);
+            }
+        }
 
  
     }
- 
+    }
 ?>
 
 
