@@ -1,3 +1,34 @@
+<?php
+session_start();
+if(isset($_SESSION["username"]))
+    {
+        header("Location: dashbord.php");
+        exit();
+    }
+
+if($_SERVER["REQUEST_METHOD"]=="POST")
+    {
+        $user=$_POST["username"];
+        $pass=$_POST["password"] ;
+        $remember=isset($_POST["remember"]);
+
+        if($user=="admin" && $pass=="1234")
+            {
+                $_SESSION["username"]=$user;
+
+                if($remember)
+                {
+                    setcookie("username",$user,time()+(86400*30),"/");
+                }
+                header("Location: dashbord.php");
+                exit();    
+            }
+        else{
+            $error="Invalid username or password";
+        }    
+    }    
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,7 +53,7 @@
         <div class="form">
             <label for="username">Username</label>
             <input type="text" id="username" name="username" placeholder="Enter username" 
-            >
+            required value="<?php echo isset($_COOKIE['username']) ? $_COOKIE['username']: ''; ?>">
         </div>
 
         <div class="form">
