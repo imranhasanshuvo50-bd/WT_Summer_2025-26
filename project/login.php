@@ -53,7 +53,7 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
         <div class="form">
             <label for="username">Username</label>
             <input type="text" id="username" name="username" placeholder="Enter username" 
-            required value="<?php echo isset($_COOKIE['username']) ? $_COOKIE['username']: ''; ?>">
+            required value="">
         </div>
 
         <div class="form">
@@ -71,6 +71,19 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
 
         <input type="submit" id="loginBtn" value="Login">
     </form>
+        <script>
+        function viewPassword() {
+            var passwordInput = document.getElementById("password");
+            var showPasswordBtn = document.getElementById("showPasswordBtn");
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                showPasswordBtn.textContent = "Hide";
+            } else {
+                passwordInput.type = "password";
+                showPasswordBtn.textContent = "Show";
+            }
+        }
+    </script>
 
     <style>
         * {
