@@ -1,6 +1,6 @@
 <?php
 session_start();
-if(isset($_SESSION["username"]))
+if(isset($_SESSION["user-Email"]))
     {
         header("Location: dashbord.php");
         exit();
@@ -8,23 +8,23 @@ if(isset($_SESSION["username"]))
 
 if($_SERVER["REQUEST_METHOD"]=="POST")
     {
-        $user=$_POST["username"];
+        $user_Email=$_POST["user-Email"];
         $pass=$_POST["password"] ;
         $remember=isset($_POST["remember"]);
 
-        if($user=="admin" && $pass=="1234")
+        if($user_Email=="admin" && $pass=="1234")
             {
-                $_SESSION["username"]=$user;
+                $_SESSION["user-Email"]=$user_Email;
 
                 if($remember)
                 {
-                    setcookie("username",$user,time()+(86400*30),"/");
+                    setcookie("user-Email",$user_Email,time()+(86400*30),"/");
                 }
                 header("Location: dashbord.php");
                 exit();    
             }
         else{
-            $error="Invalid username or password";
+            $error="Invalid user-Email or password";
         }    
     }    
 ?>
@@ -51,8 +51,8 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
   
 
         <div class="form">
-            <label for="username">Username</label>
-            <input type="text" id="username" name="username" placeholder="Enter username" 
+            <label for="user-Email">user-Email</label>
+            <input type="text" id="user-Email" name="user-Email" placeholder="Enter user-Email" 
             required value="">
         </div>
 

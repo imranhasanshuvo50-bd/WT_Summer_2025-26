@@ -14,14 +14,14 @@ session_start();
 
     <div class="logoutContainer">
         <div id="welcome">
-    Hello, <?php echo $_SESSION["username"]; ?>
+    Hello, <?php echo $_SESSION["user-Email"]; ?>
         </div>
 
         <div id="heading">
             <label>User Account Management</label>
         </div>
 
-        <a href="userAccount.php">
+        <a href="userAccountManagement.php">
             <button class="normalBtn">User Account Management</button>
         </a>
 
