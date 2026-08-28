@@ -30,6 +30,18 @@ session_start();
         <a href="checkAvailability.php">
              <button class="normalBtn">Check Availability</button>
         </a>
+
+        <a href="bookAppointment.php"> 
+            <button class="normalBtn">Book Appointment</button> 
+        </a>
+
+        <a href="appointmentStatus.php"> 
+            <button class="normalBtn">View Appointment Status</button> 
+        </a>
+
+        <a href="cancelAppointment.php"> 
+            <button class="normalBtn">Cancel Appointment</button>
+         </a>
         
        </div>
 
