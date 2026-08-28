@@ -144,7 +144,7 @@ if (!$result) {
     <td>
         <table>
             <tr>
-        <td colspan="6">
+        <td>
             <form method="POST">
                 <input type="text" name="name" placeholder="Name" required><br>
                 <input type="email" name="email" placeholder="Email" required><br>
