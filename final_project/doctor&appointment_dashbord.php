@@ -39,9 +39,15 @@ session_start();
             <button class="normalBtn">Cancel Appointment</button>
         </a>
 
-        <a href="logout.php"> 
-            <button id="logoutBtn">Logout</button> 
-        </a>
+        <div class="actionGroup">
+            <a href="patient_dashboard.php"> 
+                <button id="backBtn">Back</button> 
+            </a>
+
+            <a href="logout.php"> 
+                <button id="logoutBtn">Logout</button> 
+            </a>
+        </div>
         
        </div>
 
@@ -104,11 +110,31 @@ session_start();
             background-color: #0056b3;
         }
 
+        .actionGroup {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        #backBtn {
+            width: 145px;
+            padding: 10px 15px;
+            font-size: 14px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #backBtn:hover {
+            background-color: #218838;
+        }
+
         #logoutBtn { 
-            width: 300px; 
-            padding: 12px 20px; 
-            margin-top: 25px; 
-            font-size: 16px; 
+            width: 145px; 
+            padding: 10px 15px; 
+            font-size: 14px; 
             background-color: #dc3545; 
             color: white; 
             border: none; 
@@ -122,8 +148,6 @@ session_start();
 
       </style>
 
-
     </body>
 
-
-</html>    
+</html>
