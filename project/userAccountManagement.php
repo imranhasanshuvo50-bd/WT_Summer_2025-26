@@ -31,11 +31,35 @@ if (isset($_POST["add_user"])) {
     }
 }
 
+if (isset($_POST["edit_user"])) {
+    $id = $_POST["id"];
+    $name = $_POST["name"];
+    $email = $_POST["email"];
+    $role = $_POST["role"];
+    $status = $_POST["status"];
+
+    $sql = "UPDATE users SET name='$name', email='$email', role='$role', status='$status' WHERE id='$id'";
+
+    if (mysqli_query($conn, $sql)) {
+        header("Location: userAccountManagement.php");
+        exit();
+    } else {
+        die("Update failed: " . mysqli_error($conn));
+    }
+}
+
 $searchValue = trim($_GET["search"] ?? "");
+$editUser = null;
+
+if (isset($_GET["edit"])) {
+    $editId = $_GET["edit"];
+    $editResult = mysqli_query($conn, "SELECT * FROM users WHERE id='$editId'");
+    $editUser = mysqli_fetch_assoc($editResult);
+}
 
 $sql = "SELECT * FROM users";
 
-if ($search !== "") {
+if ($searchValue !== "") {
     $sql .= " WHERE id LIKE '%$searchValue%'
               OR name LIKE '%$searchValue%'
               OR email LIKE '%$searchValue%'";
@@ -58,7 +82,7 @@ if (!$result) {
 <body>
 <h2>Search Account</h2>
 <form method="GET">
-        <input type="text" name="search" placeholder="Search by ID, name or email" value="<?php echo $search; ?>">
+        <input type="text" name="search" placeholder="Search by ID, name or email" value="<?php echo $searchValue; ?>">
         <button type="submit">Search</button>
         <a href="userAccountManagement.php">Clear</a>
 </form>
@@ -93,6 +117,9 @@ if (!$result) {
             <td><?php echo $row["role"]; ?></td>
             <td><?php echo $row["status"]; ?></td>
             <td>
+                <form method="GET">
+                    <button type="submit" name="edit" value="<?php echo $row["id"]; ?>">Edit</button>
+                </form>
                 <form method="POST" onsubmit="return confirm('Are you sure you want to delete?');">
                     <input type="hidden" name="id" value="<?php echo $row["id"]; ?>">
                     <button type="submit" name="delete_user">Delete</button>
@@ -108,33 +135,62 @@ if (!$result) {
     }
     ?>
 
-    <tr>
+
+
+    </td>
+
+</table>
+</td>
+    <td>
+        <table>
+            <tr>
         <td colspan="6">
             <form method="POST">
-                <input type="text" name="name" placeholder="Name" required>
-                <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Password" required>
+                <input type="text" name="name" placeholder="Name" required><br>
+                <input type="email" name="email" placeholder="Email" required><br>
+                <input type="password" name="password" placeholder="Password" required><br>
                 <select name="role" required>
                     <option value="">Select Role</option>
                     <option value="admin">Admin</option>
                     <option value="patient">Patient</option>
                     <option value="doctor">Doctor</option>
                     <option value="receptionist">Receptionist</option>
-                </select>
+                </select><br>
                 <select name="status" required>
                     <option value="">Select Status</option>
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
-                </select>
+                </select><br>
                 <button type="submit" name="add_user">Add New</button>
-            </form>
+            </form><br><br>
+           
+    <h2>Edit User Details</h2>
+    <form method="POST">
+        <input type="hidden" name="id" value="<?php echo $editUser["id"]; ?>"><br>
+        <input type="text" name="name" value="<?php echo $editUser["name"]; ?>" required><br>
+        <input type="email" name="email" value="<?php echo $editUser["email"]; ?>" required><br>
+        <select name="role" required>
+            <option value="admin" <?php if ($editUser["role"] == "admin") echo "selected"; ?>>Admin</option>
+            <option value="patient" <?php if ($editUser["role"] == "patient") echo "selected"; ?>>Patient</option>
+            <option value="doctor" <?php if ($editUser["role"] == "doctor") echo "selected"; ?>>Doctor</option>
+            <option value="receptionist" <?php if ($editUser["role"] == "receptionist") echo "selected"; ?>>Receptionist</option>
+        </select><br>
+        <select name="status" required>
+            <option value="Active" <?php if ($editUser["status"] == "Active") echo "selected"; ?>>Active</option>
+            <option value="Inactive" <?php if ($editUser["status"] == "Inactive") echo "selected"; ?>>Inactive</option>
+        </select><br>
+        <button type="submit" name="edit_user">Save Changes</button>
+    </form>
+
+<button><a href="userAccountManagement.php">Clear</a></button>
         </td>
-    </tr>
+        </tr>
+</table>
+
 
 </table>
-</td>
-</tr>
-</table>
+
+
 
 
   <style>
