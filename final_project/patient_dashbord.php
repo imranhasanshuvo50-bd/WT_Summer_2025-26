@@ -13,7 +13,7 @@ session_start();
 
        <div id="welcome">
          Hello, <?php echo $_SESSION["user-Email"]; ?>
-        </div>
+       </div>
 
         <div id="heading">
          <label>Doctor & Appointment</label>
@@ -22,6 +22,15 @@ session_start();
         <a href="searchDoctor.php">
          <button class="normalBtn">Search Doctor</button>
         </a>
+
+        <a href="doctorProfile.php">
+             <button class="normalBtn">View Doctor Profile</button>
+        </a>
+
+        <a href="checkAvailability.php">
+             <button class="normalBtn">Check Availability</button>
+        </a>
+        
        </div>
 
      <style>
