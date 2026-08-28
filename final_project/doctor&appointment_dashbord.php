@@ -41,7 +41,11 @@ session_start();
 
         <a href="cancelAppointment.php"> 
             <button class="normalBtn">Cancel Appointment</button>
-         </a>
+        </a>
+
+        <a href="logout.php"> 
+            <button id="logoutBtn">Logout</button> 
+        </a>
         
        </div>
 
@@ -104,6 +108,21 @@ session_start();
             background-color: #0056b3;
         }
 
+        #logoutBtn { 
+            width: 300px; 
+            padding: 12px 20px; 
+            margin-top: 25px; 
+            font-size: 16px; 
+            background-color: #dc3545; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+        } 
+        
+        #logoutBtn:hover { 
+            background-color: #a71d2a; 
+        }
 
       </style>
 
