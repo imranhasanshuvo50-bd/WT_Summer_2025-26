@@ -17,15 +17,15 @@ session_start();
         <label>Patient Dashboard</label>
     </div>
 
-    <a href="doctorAppointment.php">
+    <a href="doctor&appointment_dashbord.php">
         <button class="normalBtn">Doctor & Appointment</button>
     </a>
 
-    <a href="medicalRecordPrescription.php">
+    <a href="medicialrecord&prescription_dashboard.php">
         <button class="normalBtn">Medical Record & Prescription</button>
     </a>
 
-    <a href="billingFeedback.php">
+    <a href="billing&feedback_dashboard.php">
         <button class="normalBtn">Billing & Feedback</button>
     </a>
 
