@@ -31,8 +31,8 @@ if (isset($_POST["add_user"])) {
     }
 }
 
-$searchValue = trim($_GET["search"] ?? "");
-
+$search = trim($_GET["search"] ?? "");
+$searchValue = mysqli_real_escape_string($conn, $search);
 $sql = "SELECT * FROM users";
 
 if ($search !== "") {
@@ -72,7 +72,7 @@ if (!$result) {
         <th>ID</th>
         <th>Name</th>
         <th>Email</th>
-       
+        <th>Password</th>
         <th>Role</th>
         <th>Status</th>
         <th>Action</th>
@@ -89,11 +89,11 @@ if (!$result) {
             <td><?php echo $row["id"]; ?></td>
             <td><?php echo $row["name"]; ?></td>
             <td><?php echo $row["email"]; ?></td>
-            
+            <td><?php echo $row["pass"]; ?></td>
             <td><?php echo $row["role"]; ?></td>
             <td><?php echo $row["status"]; ?></td>
             <td>
-                <form method="POST" onsubmit="return confirm('Are you sure you want to delete?');">
+                <form method="POST" onsubmit="return confirm('Delete this user?');">
                     <input type="hidden" name="id" value="<?php echo $row["id"]; ?>">
                     <button type="submit" name="delete_user">Delete</button>
                 </form>
@@ -104,12 +104,12 @@ if (!$result) {
         }
 
     } else {
-        echo "<tr><td colspan='6'>No User Accounts found</td></tr>";
+        echo "<tr><td colspan='7'>No User Accounts found</td></tr>";
     }
     ?>
 
     <tr>
-        <td colspan="6">
+        <td colspan="7">
             <form method="POST">
                 <input type="text" name="name" placeholder="Name" required>
                 <input type="email" name="email" placeholder="Email" required>
