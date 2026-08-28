@@ -11,12 +11,7 @@ session_start();
 
 <body>
 
-```
-<div class="logoutContainer">
-
-    <div id="welcome">
-        Hello, <?php echo $_SESSION["user-Email"]; ?>
-    </div>
+<div class="patientContainer">
 
     <div id="heading">
         <label>Patient Dashboard</label>
@@ -58,7 +53,7 @@ session_start();
         font-family: Arial, sans-serif;
     }
 
-    .logoutContainer {
+    .patientContainer {
         display: flex;
         flex-direction: column;
         padding: 60px 50px;
@@ -100,10 +95,10 @@ session_start();
     }
 
     #logoutBtn {
-        width: 300px;
-        padding: 12px 20px;
-        margin-top: 25px;
-        font-size: 16px;
+        width: 145px;
+        padding: 10px 15px;
+        margin-top: 15px;
+        font-size: 14px;
         background-color: #dc3545;
         color: white;
         border: none;
@@ -116,7 +111,6 @@ session_start();
     }
 
 </style>
-```
 
 </body>
 </html>

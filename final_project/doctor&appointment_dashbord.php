@@ -9,11 +9,7 @@ session_start();
     </head>
   <body>
 
-     <div class="dashboardContainer">
-
-       <div id="welcome">
-         Hello, <?php echo $_SESSION["user-Email"]; ?>
-       </div>
+     <div class="docappContainer">
 
         <div id="heading">
          <label>Doctor & Appointment</label>
@@ -67,7 +63,7 @@ session_start();
             font-family: Arial, sans-serif;
         }
 
-        .dashboardContainer {
+        .docappContainer {
             display: flex;
             flex-direction: column;
             padding: 60px 50px;
