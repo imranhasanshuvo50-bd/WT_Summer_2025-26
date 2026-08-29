@@ -269,7 +269,6 @@ $tab = $_GET["tab"] ?? "list";
             margin-bottom: 18px;
         }
 
-
         .form-group {
             width: 50%;
         }
@@ -277,150 +276,94 @@ $tab = $_GET["tab"] ?? "list";
 
         label {
             display: block;
-
             font-size: 14px;
-
             margin-bottom: 7px;
-
             color: #444;
         }
 
-
-        input,
-        select,
-        textarea {
+        input,select,textarea {
             width: 100%;
-
             padding: 11px;
-
             border: 1px solid #ccc;
-
             border-radius: 6px;
-
             font-size: 14px;
         }
 
 
         textarea {
             height: 90px;
-
             resize: none;
         }
 
-
-        /* BILL LIST */
-
         .bill-list {
             background-color: white;
-
             padding: 25px;
-
             border: 1px solid #ddd;
-
             border-radius: 10px;
         }
 
-
         .bill-list h2 {
             font-size: 20px;
-
             margin-bottom: 20px;
         }
 
-
         table {
             width: 100%;
-
             border-collapse: collapse;
         }
 
-
-        th,
-        td {
+        th,td {
             padding: 12px;
-
             border-bottom: 1px solid #ddd;
-
             text-align: left;
-
             font-size: 14px;
         }
 
 
         th {
             background-color:   #1d65a8;
-
             color: white;
         }
-
-
-        /* STATUS */
 
         .paid {
             color: #16803c;
-
             background-color: #e8f7ee;
-
             padding: 5px 9px;
-
             border-radius: 5px;
-
             font-size: 12px;
-
             font-weight: bold;
         }
-
 
         .pending {
             color: #b36b00;
-
             background-color: #fff3d6;
-
             padding: 5px 9px;
-
             border-radius: 5px;
-
             font-size: 12px;
-
             font-weight: bold;
         }
 
 
-        /* ACTION BUTTONS */
-
         .view-button {
             text-decoration: none;
-
             background-color: #2878c8;
-
             color: white;
-
             padding: 7px 12px;
-
             border-radius: 5px;
-
             font-size: 13px;
         }
-
 
         .view-button:hover {
             background-color: #1d65a8;
         }
 
-
         .edit-button {
             text-decoration: none;
-
             background-color: #1d65a8;
-
             color: white;
-
             padding: 7px 12px;
-
             border-radius: 5px;
-
             font-size: 13px;
-
             margin-left: 5px;
         }
 
@@ -429,24 +372,14 @@ $tab = $_GET["tab"] ?? "list";
             background-color: #1d65a8;
         }
 
-
-        /* BACK BUTTON */
-
         .back-button {
             display: inline-block;
-
             text-decoration: none;
-
             color: #17375e;
-
             border: 1px solid #17375e;
-
             padding: 10px 18px;
-
             border-radius: 6px;
-
             font-size: 14px;
-
             margin-left: 5px;
         }
 
@@ -455,17 +388,11 @@ $tab = $_GET["tab"] ?? "list";
             background-color: #eef5fc;
         }
 
-
-        /* VIEW BILL */
-
         .bill-details {
             display: grid;
-
             grid-template-columns: 1fr 1fr;
-
             gap: 15px;
         }
-
 
         .detail {
             padding: 12px;
