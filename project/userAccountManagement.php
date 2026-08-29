@@ -80,6 +80,9 @@ if (!$result) {
 
 
 <body>
+<a href="departmentManagement.php"><button type="button">Department Management</button></a>
+<a href="doctorManagement.php"><button type="button">Doctor Management</button></a>
+
 <h2>Search Account</h2>
 <form method="GET">
         <input type="text" name="search" placeholder="Search by ID, name or email" value="<?php echo $searchValue; ?>">
