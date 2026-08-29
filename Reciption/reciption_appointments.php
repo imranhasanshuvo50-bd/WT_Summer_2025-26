@@ -307,21 +307,45 @@ if (isset($_GET['action']) && $_GET['action'] == 'add') {
             </div>
 
             <div id="upcomingAppointment" class="hidden">
-             <h2 class="section-title">Upcoming Appointments</h2>
-             <div class="table-box">
+              <h2 class="section-title">Upcoming Appointments</h2>
+              <div class="table-box">
                 <table>
-                    <tr><th>Date</th><th>Time</th><th>Patient</th><th>Doctor</th></tr>
-                    <tr><td>27 Aug 2026</td><td>10:00 AM</td><td>John Doe</td><td>Dr. Rashedin</td></tr>
-                    <tr><td>27 Aug 2026</td><td>11:00 AM</td><td>Sara Ahmed</td><td>Dr. Karim</td></tr>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                    </tr>
+
+                    <tr>
+                        <td>27 Aug 2026</td>
+                        <td>10:00 AM</td>
+                        <td>John Doe</td>
+                        <td>Dr. Rashedin</td>
+                    </tr>
+
+                    <tr>
+                        <td>27 Aug 2026</td>
+                        <td>11:00 AM</td>
+                        <td>Sara Ahmed</td>
+                        <td>Dr. Karim</td>
+                    </tr>
                 </table>
-             </div>
+              </div>
             </div>
 
             <div id="allAppointment" class="hidden">
              <h2 class="section-title">All Appointments</h2>
              <div class="table-box">
                 <table>
-                    <tr><th>Time</th><th>Patient</th><th>Doctor</th><th>Status</th></tr>
+
+                    <tr>
+                        <th>Time</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Status</th>
+                    </tr>
+
                     <?php foreach ($appointments as $a) { ?>
                     <tr>
                         <td><?= $a[0] ?></td>
@@ -329,6 +353,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'add') {
                         <td><?= $a[2] ?></td>
                         <td><?= $a[3] ?></td>
                     </tr>
+
                     <?php } ?>
                 </table>
               </div>
