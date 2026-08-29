@@ -50,7 +50,6 @@ $pending_bills = 3;
             padding: 0 20px 35px;
         }
 
-
         .logo span {
             display: block;
             font-size: 12px;
@@ -59,34 +58,26 @@ $pending_bills = 3;
             color: #dbeafe;
         }
 
-
         .menu a {
             display: block;
             color: white;
             text-decoration: none;
-
             padding: 14px 20px;
-
             font-size: 14px;
         }
-
 
         .menu a:hover {
             background: #1556b0;
         }
 
-
         .menu a.active {
             background: #0b5ed7;
-
             border-left: 4px solid white;
         }
-
 
         .main {
             margin-left: 220px;
         }
-
 
         .topbar {
             height: 70px;
@@ -103,7 +94,6 @@ $pending_bills = 3;
             align-items: center;
         }
 
-
         .profile-link {
             display: flex;
             align-items: center;
@@ -111,7 +101,6 @@ $pending_bills = 3;
             text-decoration: none;
             color: #1e293b;
         }
-
 
         .profile-photo {
             width: 40px;
@@ -126,19 +115,16 @@ $pending_bills = 3;
             font-weight: bold;
         }
 
-
         .profile-name {
             display: flex;
             flex-direction: column;
             gap: 3px;
         }
 
-
         .profile-name strong {
             font-size: 13px;
             color: #1e293b;
         }
-
 
         .profile-name span {
             font-size: 11px;
@@ -166,13 +152,11 @@ $pending_bills = 3;
             color: #64748b;
         }
 
-
         .summary {
             display: flex;
             gap: 20px;
             margin-bottom: 35px;
         }
-
 
         .summary-card {
             width: 33.33%;
@@ -184,13 +168,11 @@ $pending_bills = 3;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
 
-
         .summary-card p {
             font-size: 14px;
             color: #64748b;
             margin-bottom: 8px;
         }
-
 
         .summary-card h2 {
             font-size: 28px;
@@ -210,7 +192,6 @@ $pending_bills = 3;
             margin-bottom: 35px;
         }
 
-
         .action-card {
             min-height: 85px;
             border-radius: 10px;
@@ -224,12 +205,10 @@ $pending_bills = 3;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
 
-
         .action-card:hover {
             border-color: #0b3d91;
             background:   #1556b0;
         }
-
 
         .action-text {
             font-size: 14px;
@@ -237,7 +216,6 @@ $pending_bills = 3;
             color: white;
             font-weight: bold;
         }
-
 
         .arrow {
             font-size: 22px;
@@ -260,7 +238,6 @@ $pending_bills = 3;
             font-weight: bold;
         }
 
-
         .appointment {
             display: grid;
             grid-template-columns: 1fr 2fr 2fr 40px;
@@ -277,7 +254,6 @@ $pending_bills = 3;
 </head>
 
 <body>
-
 
   <div class="sidebar">
 
@@ -302,7 +278,6 @@ $pending_bills = 3;
     <div class="topbar">
 
         <div class="profile-area">
-
 
             <a href="reciption_profile.php" class="profile-link">
 
