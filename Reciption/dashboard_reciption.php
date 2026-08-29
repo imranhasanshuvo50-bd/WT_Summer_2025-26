@@ -145,7 +145,6 @@ $pending_bills = 3;
             color: #64748b;
         }
 
-
         .content {
             padding: 30px;
         }
@@ -214,23 +213,14 @@ $pending_bills = 3;
 
         .action-card {
             min-height: 85px;
-
             border-radius: 10px;
-
             padding: 20px;
-
             display: flex;
-
             align-items: center;
-
             justify-content: space-between;
-
             text-decoration: none;
-
             background:  #1f426b;
-
             border: 1px solid #dbe3fe;
-
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
 
@@ -278,7 +268,6 @@ $pending_bills = 3;
             border-bottom: 1px solid #edf2f7;
             font-size: 13px;
         }
-
 
         .appointment:last-child {
             border-bottom: none;
@@ -353,7 +342,6 @@ $pending_bills = 3;
                 <h2> <?php echo $pending_bills; ?></h2>
             </div>
         </div>
-
 
         <h2 class="section-title"> Quick Actions </h2>
 
