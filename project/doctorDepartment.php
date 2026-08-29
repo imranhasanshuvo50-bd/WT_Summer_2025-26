@@ -1,6 +1,34 @@
 <?php
 include "config.php";
 
+if (isset($_POST["delete_department"])) {
+    $department_id = $_POST["delete_department"];
+    $sql = "DELETE FROM departments WHERE department_id='$department_id'";
+
+    if (mysqli_query($conn, $sql)) {
+        header("Location: doctorDepartment.php");
+        exit();
+    } else {
+        die("Delete failed: " . mysqli_error($conn));
+    }
+}
+
+if (isset($_POST["edit_department"])) {
+    $department_id = $_POST["department_id"];
+    $department_name = $_POST["department_name"];
+    $description = $_POST["description"];
+    $status = $_POST["status"];
+
+    $sql = "UPDATE departments SET department_name='$department_name', description='$description', status='$status' WHERE department_id='$department_id'";
+
+    if (mysqli_query($conn, $sql)) {
+        header("Location: doctorDepartment.php");
+        exit();
+    } else {
+        die("Update failed: " . mysqli_error($conn));
+    }
+}
+
 if (isset($_POST["add_department"])) {
     $department_name = $_POST["department_name"];
     $description = $_POST["description"];
@@ -20,6 +48,13 @@ if (isset($_POST["add_department"])) {
 $departmentResult = mysqli_query($conn, "SELECT * FROM departments");
 if (!$departmentResult) {
     die("Query failed: " . mysqli_error($conn));
+}
+
+$editDepartment = null;
+if (isset($_GET["edit_department"])) {
+    $department_id = $_GET["edit_department"];
+    $editResult = mysqli_query($conn, "SELECT * FROM departments WHERE department_id='$department_id'");
+    $editDepartment = mysqli_fetch_assoc($editResult);
 }
 ?>
 
@@ -119,9 +154,8 @@ if (!$departmentResult) {
 
         <div id="department-content" class="tab-content">
             <h2>Departments</h2>
-            <a href="#department-form"><button type="button"> Add Department</button></a>
-            <input type="text" placeholder="Search Department">
-
+            
+            <table><tr><td>
             <table>
                 <tr>
                     <th>ID</th>
@@ -140,20 +174,44 @@ if (!$departmentResult) {
                         <td><?php echo $department["description"]; ?></td>
                         <td><?php echo $department["status"]; ?></td>
                         <td>0</td>
-                        <td>Edit / Delete</td>
+                        <td>
+                            <a href="doctorDepartment.php?edit_department=<?php echo $department["department_id"]; ?>">Edit</a>
+                            <form method="POST" onsubmit="return confirm('Are you sure you want to delete?');">
+                                <button type="submit" name="delete_department" value="<?php echo $department["department_id"]; ?>">Delete</button>
+                            </form>
+                        </td>
                     </tr>
                 <?php } ?>
             </table>
 
-            <h2>Add / Edit Department</h2>
+            </td>
+            <td>
+            <h2><?php echo $editDepartment ? "Edit Department" : "Add New Department"; ?></h2>
             <form method="POST" id="department-form">
                 <table class="form-table">
-                    <tr><td>Department Name</td><td><input type="text" name="department_name" required></td></tr>
-                    <tr><td>Description</td><td><textarea name="description"></textarea></td></tr>
-                    <tr><td>Status</td><td><select name="status"><option>Active</option><option>Inactive</option></select></td></tr>
-                    <tr><td colspan="2"><button type="submit" name="add_department">Save</button></td></tr>
+                    <?php if ($editDepartment): ?>
+                        <input type="hidden" name="department_id" value="<?php echo $editDepartment["department_id"]; ?>">
+                    <?php endif; ?>
+                    <tr><td>Department Name</td><td><input type="text" name="department_name" value="<?php echo $editDepartment["department_name"] ?? ""; ?>" required></td></tr>
+                    <tr><td>Description</td><td><textarea name="description"><?php echo $editDepartment["description"] ?? ""; ?></textarea></td></tr>
+                    <tr><td>Status</td><td><select name="status">
+                        <option <?php if (($editDepartment["status"] ?? "Active") == "Active") echo "selected"; ?>>Active</option>
+                        <option <?php if (($editDepartment["status"] ?? "") == "Inactive") echo "selected"; ?>>Inactive</option>
+                    </select></td></tr>
+                    <tr><td colspan="2">
+                        <button type="submit" name="<?php echo $editDepartment ? "edit_department" : "add_department"; ?>"><?php echo $editDepartment ? "Save Changes" : "Save"; ?></button>
+                        <?php if ($editDepartment): ?>
+                            <a href="doctorDepartment.php"><button type="button">Cancel Edit</button></a>
+                        <?php endif; ?>
+                    </td></tr>
                 </table>
             </form>
+                    </td></tr>
+
+
+            </table>
+
+            
         </div>
 
         <div id="doctor-content" class="tab-content">
