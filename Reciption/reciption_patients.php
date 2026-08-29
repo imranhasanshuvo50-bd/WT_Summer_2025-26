@@ -56,20 +56,15 @@ if (isset($_GET["tab"])) {
 
         .menu a {
             display: block;
-
             padding: 14px 25px;
-
             color: white;
-
             text-decoration: none;
-
             font-size: 15px;
         }
 
         .menu a:hover {
             background-color: #24558b;
         }
-
 
         .menu a.active {
             background-color: #2878c8;
@@ -91,102 +86,71 @@ if (isset($_GET["tab"])) {
             gap: 20px;
         }
 
-
         .receptionist {
             font-size: 15px;
         }
 
-
         .profile {
             text-decoration: none;
-
             color: #17375e;
-
             font-size: 14px;
-
             border: 1px solid #ddd;
-
             padding: 9px 15px;
-
             border-radius: 6px;
         }
-
 
         .profile:hover {
             background-color: #eef5fc;
         }
 
-
         .content {
             padding: 30px 35px;
         }
 
-
         .page-title {
             font-size: 25px;
-
             margin-bottom: 5px;
         }
 
-
         .page-text {
             color: #666;
-
             font-size: 14px;
-
             margin-bottom: 25px;
         }
 
         .search-box {
             background-color: white;
-
             padding: 20px;
-
             border: 1px solid #ddd;
-
             border-radius: 10px;
-
             margin-bottom: 20px;
         }
 
 
         .search-form {
             display: flex;
-
             gap: 10px;
         }
 
 
         .search-form input {
             flex: 1;
-
             padding: 11px;
-
             border: 1px solid #ccc;
-
             border-radius: 6px;
-
             font-size: 14px;
         }
 
 
         .button {
             background-color: #2878c8;
-
             color: white;
-
             border: none;
-
             padding: 11px 20px;
-
             border-radius: 6px;
-
             font-size: 14px;
-
             cursor: pointer;
-
             text-decoration: none;
-
             display: inline-block;
         }
 
@@ -198,19 +162,12 @@ if (isset($_GET["tab"])) {
 
         .add-button {
             display: inline-block;
-
             text-decoration: none;
-
             background-color: #2878c8;
-
             color: white;
-
             padding: 11px 18px;
-
             border-radius: 6px;
-
             font-size: 14px;
-
             margin-bottom: 20px;
         }
 
