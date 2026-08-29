@@ -1,3 +1,28 @@
+<?php
+include "config.php";
+
+if (isset($_POST["add_department"])) {
+    $department_name = $_POST["department_name"];
+    $description = $_POST["description"];
+    $status = $_POST["status"];
+
+    $sql = "INSERT INTO departments (department_name, description, status)
+            VALUES ('$department_name', '$description', '$status')";
+
+    if (mysqli_query($conn, $sql)) {
+        header("Location: doctorDepartment.php");
+        exit();
+    } else {
+        die("Insert failed: " . mysqli_error($conn));
+    }
+}
+
+$departmentResult = mysqli_query($conn, "SELECT * FROM departments");
+if (!$departmentResult) {
+    die("Query failed: " . mysqli_error($conn));
+}
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -47,10 +72,6 @@
             color: white;
         }
 
-        .tabs input {
-            display: none;
-        }
-
         .tabs label {
             display: inline-block;
             padding: 10px 18px;
@@ -98,7 +119,7 @@
 
         <div id="department-content" class="tab-content">
             <h2>Departments</h2>
-            <button type="button">+ Add Department</button>
+            <a href="#department-form"><button type="button"> Add Department</button></a>
             <input type="text" placeholder="Search Department">
 
             <table>
@@ -110,20 +131,34 @@
                     <th>Doctors</th>
                     <th>Action</th>
                 </tr>
+                <?php for ($i = 0; $i < mysqli_num_rows($departmentResult); $i++) {
+                    $department = mysqli_fetch_assoc($departmentResult);
+                ?>
+                    <tr>
+                        <td><?php echo $department["department_id"]; ?></td>
+                        <td><?php echo $department["department_name"]; ?></td>
+                        <td><?php echo $department["description"]; ?></td>
+                        <td><?php echo $department["status"]; ?></td>
+                        <td>0</td>
+                        <td>Edit / Delete</td>
+                    </tr>
+                <?php } ?>
             </table>
 
             <h2>Add / Edit Department</h2>
-            <table class="form-table">
-                <tr><td>Department Name</td><td><input type="text" name="department_name"></td></tr>
-                <tr><td>Description</td><td><textarea name="description"></textarea></td></tr>
-                <tr><td>Status</td><td><select name="status"><option>Active</option><option>Inactive</option></select></td></tr>
-                <tr><td colspan="2"><button type="button">Save</button></td></tr>
-            </table>
+            <form method="POST" id="department-form">
+                <table class="form-table">
+                    <tr><td>Department Name</td><td><input type="text" name="department_name" required></td></tr>
+                    <tr><td>Description</td><td><textarea name="description"></textarea></td></tr>
+                    <tr><td>Status</td><td><select name="status"><option>Active</option><option>Inactive</option></select></td></tr>
+                    <tr><td colspan="2"><button type="submit" name="add_department">Save</button></td></tr>
+                </table>
+            </form>
         </div>
 
         <div id="doctor-content" class="tab-content">
             <h2>Doctors</h2>
-            <button type="button">+ Scan for new Doctors</button>
+            <button type="button">Scan for new Doctors</button>
             <input type="text" placeholder="Search Doctor">
             <select>
                 <option>Department Filter</option>
