@@ -209,8 +209,7 @@ $currentPatient = $_SESSION['current_patient'] ?? null;
             background: #f8fbff;
         }
 
-        .token,
-        .status {
+        .token, .status {
             color: #1f426b;
             font-weight: bold;
         }
@@ -323,7 +322,8 @@ $currentPatient = $_SESSION['current_patient'] ?? null;
 
                         <?php } ?>
 
-                    <?php } else { ?>
+                    <?php } else { 
+                        ?>
 
                         <tr>
                             <td colspan="5" class="empty"> No patients waiting. </td>
