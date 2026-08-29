@@ -72,11 +72,9 @@ $role = "Receptionist";
             height: 70px;
             background: white;
             border-bottom: 1px solid #ddd;
-
             display: flex;
             align-items: center;
             justify-content: flex-end;
-
             padding: 0 30px;
         }
 
@@ -211,21 +209,16 @@ $role = "Receptionist";
 
         .form-group label {
             display: block;
-
             font-size: 13px;
             color: #555;
-
             margin-bottom: 7px;
         }
 
         .form-group input {
             width: 100%;
-
             padding: 11px;
-
             border: 1px solid #ccc;
             border-radius: 6px;
-
             font-size: 14px;
         }
 
@@ -237,13 +230,9 @@ $role = "Receptionist";
         .save-button {
             background: #2878c8;
             color: white;
-
             border: none;
-
             padding: 11px 20px;
-
             border-radius: 6px;
-
             cursor: pointer;
         }
 
@@ -254,24 +243,20 @@ $role = "Receptionist";
 
         .security-card {
             background: white;
-
             border: 1px solid #ddd;
             border-radius: 10px;
-
             padding: 25px;
         }
 
         .security-card h2 {
             color: #17375e;
             font-size: 19px;
-
             margin-bottom: 6px;
         }
 
         .security-card p {
             color: #666;
             font-size: 13px;
-
             margin-bottom: 18px;
         }
 
@@ -281,18 +266,12 @@ $role = "Receptionist";
 
         summary {
             display: inline-block;
-
             background: #17375e;
             color: white;
-
             padding: 11px 20px;
-
             border-radius: 6px;
-
             cursor: pointer;
-
             font-size: 14px;
-
             list-style: none;
         }
 
@@ -307,21 +286,15 @@ $role = "Receptionist";
 
         .password-form {
             margin-top: 20px;
-
             padding: 20px;
-
             background: #f8fafc;
-
             border: 1px solid #ddd;
-
             border-radius: 8px;
         }
 
         .password-form h3 {
             color: #17375e;
-
             font-size: 17px;
-
             margin-bottom: 18px;
         }
 
@@ -331,34 +304,24 @@ $role = "Receptionist";
 
         .password-group label {
             display: block;
-
             font-size: 13px;
             color: #555;
-
             margin-bottom: 7px;
         }
 
         .password-group input {
             width: 100%;
-
             padding: 11px;
-
             border: 1px solid #ccc;
-
             border-radius: 6px;
         }
 
         .update-button {
             background: #2878c8;
-
             color: white;
-
             border: none;
-
             padding: 11px 20px;
-
             border-radius: 6px;
-
             cursor: pointer;
         }
 
@@ -389,8 +352,6 @@ $role = "Receptionist";
         </div>
 
     </div>
-
-
 
  <div class="main">
 
