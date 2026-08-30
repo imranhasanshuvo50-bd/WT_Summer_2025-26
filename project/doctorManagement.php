@@ -1,7 +1,7 @@
 <?php
 include "config.php";
 
-if (isset($_POST["scan_doctors"])) {
+if (isset($_GET["scan_doctors"])) {
     $sql = "INSERT INTO doctors (user_id) SELECT users.id FROM users LEFT JOIN doctors ON doctors.user_id=users.id WHERE users.role='doctor' AND doctors.user_id IS NULL";
 
     if (mysqli_query($conn, $sql)) {
@@ -138,6 +138,7 @@ if (isset($_GET["edit_doctor"])) {
                                 </form>
                                 <a href="doctorAvailability.php?doctor_id=<?php echo $doctor["doctor_id"]; ?>"><button
                                         type="button">Availability</button></a>
+
                             </td>
                         </tr>
                     <?php } ?>

@@ -1,6 +1,6 @@
 <?php
 session_start();
-include"config.php";
+include "config.php";
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -8,21 +8,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $pass = $_POST["password"];
     $remember = isset($_POST["remember"]);
 
-    $sql="SELECT * FROM USERS WHERE EMAIL = '$user_Email'";
-$result=mysqli_query($conn,$sql);
-$user = mysqli_fetch_assoc($result);
-if (mysqli_num_rows($result) > 0 && $user['pass']==$pass) {
+    $sql = "SELECT * FROM USERS WHERE EMAIL = '$user_Email'";
+    $result = mysqli_query($conn, $sql);
+    $user = mysqli_fetch_assoc($result);
+    if (mysqli_num_rows($result) > 0 && $user['pass'] == $pass) {
         $_SESSION["user-Email"] = $user_Email;
 
         if ($remember) {
             setcookie("user-Email", $user_Email, time() + (86400 * 30), "/");
         }
-       
-        {header("Location: dashbord.php");}
+        if ($user['role'] == "admin" && $user['status'] == "active") {
+            header("Location: dashbord_admin.php");
+        } else if ($user['role'] == "doctor" && $user['status'] == "active") {
+            header("Location: user_dashboard.php");
+        } else if ($user['role'] == "patient" && $user['status'] == "active") {
+            header("Location: user_dashboard.php");
+        } else if ($user["role"] == "patient") {
 
-        exit();
-    } else {
-        $error = "Invalid user-Email or password";
+            exit();
+        } else {
+            $error = "Invalid user-Email or password";
+        }
     }
 }
 

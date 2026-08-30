@@ -1,7 +1,7 @@
 <?php
 include "config.php";
 
-$doctor_id = $_GET["doctor_id"] ?? $_POST["doctor_id"] ?? "";
+$doctor_id = $_GET["doctor_id"] ;
 
 if (isset($_POST["delete_availability"])) {
     $availability_id = $_POST["delete_availability"];
