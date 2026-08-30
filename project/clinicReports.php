@@ -20,6 +20,11 @@ if (isset($_POST["add_user"])) {
     $role = $_POST["role"];
     $status = $_POST["status"];
 
+    $check_email = mysqli_query($conn, "SELECT * FROM users WHERE email='$email'");
+    if (mysqli_num_rows($check_email) > 0) {
+        die("Email already exists!");
+    }
+
     $sql = "INSERT INTO users (name, email, pass, role, status)
             VALUES ('$name', '$email', '$pass', '$role', '$status')";
 

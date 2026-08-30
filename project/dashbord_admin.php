@@ -4,14 +4,16 @@ session_start();
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>User Dashboard</title>
 </head>
+
 <body>
-</div>
+    </div>
     <div class="logoutContainer">
         <div id="welcome">
-    Hello, <?php echo $_SESSION["user-Email"]; ?>
+            Hello, <?php echo $_SESSION["user-Email"]; ?>
         </div>
         <div id="heading">
             <label>User Account Management</label>
@@ -36,15 +38,17 @@ session_start();
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             display: flex;
-             justify-content: center;
+            justify-content: center;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
             background-color: #cfedfa;
             font-family: Arial, sans-serif;
         }
+
         .logoutContainer {
             display: flex;
             flex-direction: column;
@@ -56,11 +60,13 @@ session_start();
             justify-content: center;
             align-items: center;
         }
+
         #heading {
             color: #333;
             font-size: 24px;
             margin-bottom: 30px;
         }
+
         .normalBtn {
             width: 300px;
             padding: 12px 20px;
@@ -92,13 +98,15 @@ session_start();
         #logoutBtn:hover {
             background-color: #a71d2a;
         }
+
         #welcome {
-    color: #333;
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
+            color: #333;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
     </style>
 
 </body>
+
 </html>

@@ -44,19 +44,59 @@ if (isset($_GET["edit_doctor"])) {
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Doctor Management</title>
     <style>
-        body { background-color: #cfedfa; font-family: Arial, sans-serif; }
-        input, select, button { padding: 8px; margin: 4px; }
-        button { background-color: #1714af; color: white; border: none; cursor: pointer; }
-        table { border-collapse: collapse; width: 100%; text-align: left; margin-bottom: 20px; }
-        th, td { border: 1px solid #1714af; padding: 8px; background-color: #d0d0d0; }
-        th { background-color: #1714af; color: white; }
-        .layout td { vertical-align: top; padding: 10px; }
-        .form-table { width: auto; }
+        body {
+            background-color: #cfedfa;
+            font-family: Arial, sans-serif;
+        }
+
+        input,
+        select,
+        button {
+            padding: 8px;
+            margin: 4px;
+        }
+
+        button {
+            background-color: #1714af;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #1714af;
+            padding: 8px;
+            background-color: #d0d0d0;
+        }
+
+        th {
+            background-color: #1714af;
+            color: white;
+        }
+
+        .layout td {
+            vertical-align: top;
+            padding: 10px;
+        }
+
+        .form-table {
+            width: auto;
+        }
     </style>
 </head>
+
 <body>
     <h1>Doctor Management</h1>
     <form method="POST">
@@ -66,70 +106,105 @@ if (isset($_GET["edit_doctor"])) {
     <table class="layout">
         <tr>
             <td>
-    <h2>Doctors</h2>
-    <table>
-        <tr>
-            <th>Doctor ID</th>
-            <th>User ID</th>
-            <th>Doctor</th>
-            <th>Department</th>
-            <th>Specialization</th>
-            <th>Qualification</th>
-            <th>Experience</th>
-            <th>Fee</th>
-            <th>Action</th>
-        </tr>
-        <?php for ($i = 0; $i < mysqli_num_rows($doctorResult); $i++) {
-            $doctor = mysqli_fetch_assoc($doctorResult);
-        ?>
-            <tr>
-                <td><?php echo $doctor["doctor_id"]; ?></td>
-                <td><?php echo $doctor["user_id"]; ?></td>
-                <td><?php echo $doctor["name"]; ?></td>
-                <td><?php echo $doctor["department_name"] ?? ""; ?></td>
-                <td><?php echo $doctor["specialization"] ?? ""; ?></td>
-                <td><?php echo $doctor["qualification"] ?? ""; ?></td>
-                <td><?php echo $doctor["experience"] ?? ""; ?></td>
-                <td><?php echo $doctor["consultation_fee"] ?? ""; ?></td>
-                <td>
-                    <form method="GET">
-                        <button type="submit" name="edit_doctor" value="<?php echo $doctor["doctor_id"]; ?>">Edit Details</button>
-                    </form>
-                </td>
-            </tr>
-        <?php } ?>
-        </table>
+                <h2>Doctors</h2>
+                <table>
+                    <tr>
+                        <th>Doctor ID</th>
+                        <th>User ID</th>
+                        <th>Doctor</th>
+                        <th>Department</th>
+                        <th>Specialization</th>
+                        <th>Qualification</th>
+                        <th>Experience</th>
+                        <th>Fee</th>
+                        <th>Action</th>
+                    </tr>
+                    <?php for ($i = 0; $i < mysqli_num_rows($doctorResult); $i++) {
+                        $doctor = mysqli_fetch_assoc($doctorResult);
+                        ?>
+                        <tr>
+                            <td><?php echo $doctor["doctor_id"]; ?></td>
+                            <td><?php echo $doctor["user_id"]; ?></td>
+                            <td><?php echo $doctor["name"]; ?></td>
+                            <td><?php echo $doctor["department_name"] ?? ""; ?></td>
+                            <td><?php echo $doctor["specialization"] ?? ""; ?></td>
+                            <td><?php echo $doctor["qualification"] ?? ""; ?></td>
+                            <td><?php echo $doctor["experience"] ?? ""; ?></td>
+                            <td><?php echo $doctor["consultation_fee"] ?? ""; ?></td>
+                            <td>
+                                <form method="GET">
+                                    <button type="submit" name="edit_doctor"
+                                        value="<?php echo $doctor["doctor_id"]; ?>">Edit Details</button>
+                                </form>
+                                <a href="doctorAvailability.php?doctor_id=<?php echo $doctor["doctor_id"]; ?>"><button
+                                        type="button">Availability</button></a>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </table>
             </td>
             <td>
 
-    <?php if ($editDoctor): ?>
-        <h2>Edit Doctor Details</h2>
-        <form method="POST">
-            <input type="hidden" name="doctor_id" value="<?php echo $editDoctor["doctor_id"]; ?>">
-            <table class="form-table">
-                <tr><td>Doctor ID</td><td><input type="text" value="<?php echo $editDoctor["doctor_id"]; ?>" readonly></td></tr>
-                <tr><td>User ID</td><td><input type="text" value="<?php echo $editDoctor["user_id"]; ?>" readonly></td></tr>
-                <tr><td>Doctor Name</td><td><input type="text" value="<?php echo $editDoctor["name"]; ?>" readonly></td></tr>
-                <tr><td>Department</td><td><select name="department_id" required>
-                    <option value="">Select Department</option>
-                    <?php for ($i = 0; $i < mysqli_num_rows($departmentOptions); $i++) {
-                        $department = mysqli_fetch_assoc($departmentOptions);
-                    ?>
-                        <option value="<?php echo $department["department_id"]; ?>" <?php if ($editDoctor["department_id"] == $department["department_id"]) echo "selected"; ?>><?php echo $department["department_name"]; ?></option>
-                    <?php } ?>
-                </select></td></tr>
-                <tr><td>Specialization</td><td><input type="text" name="specialization" value="<?php echo $editDoctor["specialization"] ?? ""; ?>" required></td></tr>
-                <tr><td>Qualification</td><td><input type="text" name="qualification" value="<?php echo $editDoctor["qualification"] ?? ""; ?>" required></td></tr>
-                <tr><td>Experience</td><td><input type="number" name="experience" value="<?php echo $editDoctor["experience"] ?? ""; ?>" required></td></tr>
-                <tr><td>Consultation Fee</td><td><input type="number" name="consultation_fee" value="<?php echo $editDoctor["consultation_fee"] ?? ""; ?>" required></td></tr>
-                <tr><td colspan="2"><button type="submit" name="edit_doctor">Save Changes</button>
-                    <a href="doctorManagement.php"><button type="button">Cancel Edit</button></a>
-                </td></tr>
-            </table>
-        </form>
-    <?php endif; ?>
+                <?php if ($editDoctor): ?>
+                    <h2>Edit Doctor Details</h2>
+                    <form method="POST">
+                        <input type="hidden" name="doctor_id" value="<?php echo $editDoctor["doctor_id"]; ?>">
+                        <table class="form-table">
+                            <tr>
+                                <td>Doctor ID</td>
+                                <td><input type="text" value="<?php echo $editDoctor["doctor_id"]; ?>" readonly></td>
+                            </tr>
+                            <tr>
+                                <td>User ID</td>
+                                <td><input type="text" value="<?php echo $editDoctor["user_id"]; ?>" readonly></td>
+                            </tr>
+                            <tr>
+                                <td>Doctor Name</td>
+                                <td><input type="text" value="<?php echo $editDoctor["name"]; ?>" readonly></td>
+                            </tr>
+                            <tr>
+                                <td>Department</td>
+                                <td><select name="department_id" required>
+                                        <option value="">Select Department</option>
+                                        <?php for ($i = 0; $i < mysqli_num_rows($departmentOptions); $i++) {
+                                            $department = mysqli_fetch_assoc($departmentOptions);
+                                            ?>
+                                            <option value="<?php echo $department["department_id"]; ?>" <?php if ($editDoctor["department_id"] == $department["department_id"])
+                                                   echo "selected"; ?>><?php echo $department["department_name"]; ?></option>
+                                        <?php } ?>
+                                    </select></td>
+                            </tr>
+                            <tr>
+                                <td>Specialization</td>
+                                <td><input type="text" name="specialization"
+                                        value="<?php echo $editDoctor["specialization"] ?? ""; ?>" required></td>
+                            </tr>
+                            <tr>
+                                <td>Qualification</td>
+                                <td><input type="text" name="qualification"
+                                        value="<?php echo $editDoctor["qualification"] ?? ""; ?>" required></td>
+                            </tr>
+                            <tr>
+                                <td>Experience</td>
+                                <td><input type="number" name="experience"
+                                        value="<?php echo $editDoctor["experience"] ?? ""; ?>" required></td>
+                            </tr>
+                            <tr>
+                                <td>Consultation Fee</td>
+                                <td><input type="number" name="consultation_fee"
+                                        value="<?php echo $editDoctor["consultation_fee"] ?? ""; ?>" required></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"><button type="submit" name="edit_doctor">Save Changes</button>
+                                    <a href="doctorManagement.php"><button type="button">Cancel Edit</button></a>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                <?php endif; ?>
             </td>
         </tr>
     </table>
 </body>
+
 </html>
