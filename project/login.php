@@ -1,27 +1,32 @@
 <?php
 session_start();
-if (isset($_SESSION["user-Email"])) {
-    header("Location: dashbord.php");
-    exit();
-}
+include"config.php";
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user_Email = $_POST["user-Email"];
     $pass = $_POST["password"];
     $remember = isset($_POST["remember"]);
 
-    if ($user_Email == "admin" && $pass == "1234") {
+    $sql="SELECT * FROM USERS WHERE EMAIL = '$user_Email'";
+$result=mysqli_query($conn,$sql);
+$user = mysqli_fetch_assoc($result);
+if (mysqli_num_rows($result) > 0 && $user['pass']==$pass) {
         $_SESSION["user-Email"] = $user_Email;
 
         if ($remember) {
             setcookie("user-Email", $user_Email, time() + (86400 * 30), "/");
         }
-        header("Location: dashbord.php");
+       
+        {header("Location: dashbord.php");}
+
         exit();
     } else {
         $error = "Invalid user-Email or password";
     }
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -49,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <div class="form">
             <label for="user-Email">user-Email</label>
-            <input type="text" id="user-Email" name="user-Email" placeholder="Enter user-Email" required value="">
+            <input type="text" id="user-Email" name="user-Email" placeholder="Enter user-Email" required>
         </div>
 
         <div class="form">
@@ -71,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         function viewPassword() {
             var passwordInput = document.getElementById("password");
             var showPasswordBtn = document.getElementById("showPasswordBtn");
-            if (passwordInput.type === "password") {
+            if (passwordInput.type == "password") {
                 passwordInput.type = "text";
                 showPasswordBtn.textContent = "Hide";
             } else {
@@ -167,7 +172,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             right: 10px;
             background: none;
             border: none;
-            cursor: pointer;
             font-size: 14px;
             color: #64748b;
             padding: 5px;
@@ -183,14 +187,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .checkbox-wrapper input {
             width: 16px;
             height: 16px;
-            cursor: pointer;
+
         }
 
         .checkbox-wrapper label {
             margin-bottom: 0;
             font-size: 14px;
             font-weight: 400;
-            cursor: pointer;
+
         }
 
         #loginBtn {
