@@ -1,448 +1,272 @@
 <?php
-$tab = $_GET["tab"] ?? "list";
+
+include "config.php";
+
+
+// CREATE BILL
+
+if(isset($_POST['save_bill'])){
+
+
+$invoice_id=$_POST['invoice_id'];
+$patient_id=$_POST['patient_id'];
+$doctor_id=$_POST['doctor_id'];
+$consultation_fee=$_POST['consultation_fee'];
+$payment_method=$_POST['payment_method'];
+$notes=$_POST['notes'];
+
+
+
+mysqli_query($conn,
+
+"INSERT INTO bills
+
+(
+invoice_id,
+patient_id,
+doctor_id,
+consultation_fee,
+other_fee,
+total_amount,
+payment_status,
+payment_method,
+bill_date,
+notes
+)
+
+VALUES
+
+(
+'$invoice_id',
+'$patient_id',
+'$doctor_id',
+'$consultation_fee',
+'0',
+'$consultation_fee',
+'Pending',
+'$payment_method',
+CURDATE(),
+'$notes'
+)
+
+");
+
+
+header("Location: billing.php");
+exit();
+
+}
+
+
+
+
+// MARK PAID
+
+if(isset($_GET['paid'])){
+
+
+$id=$_GET['paid'];
+
+
+mysqli_query($conn,
+
+"UPDATE bills
+
+SET payment_status='Paid'
+
+WHERE bill_id='$id'"
+
+);
+
+
+header("Location: billing.php");
+exit();
+
+}
+
+
+
+$search="";
+
+
+if(isset($_GET['search'])){
+
+$search=$_GET['search'];
+
+}
+
+
+
 ?>
 
+
+
 <!DOCTYPE html>
+
 <html>
 
 <head>
 
-    <title>Billing</title>
+<title>Billing</title>
 
-    <style>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
+<style>
 
-        body {
-            background-color: #f5f7fa;
-            color: #172b4d;
-        }
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
 
-        .logo {
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
-            padding: 0px 20px 35px;
-        }
 
-        .logo span {
-            display: block;
-            font-size: 12px;
-            font-weight: normal;
-            margin-top: 5px;
-            color: #dbeafe;
-        }
+body{
+background:#f5f9ff;
+}
 
 
-        .sidebar {
-            width: 220px;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            background-color: #1f426b;
-            padding-top: 25px;
-        }
 
+.sidebar{
 
-        .menu a {
-            display: block;
-            padding: 14px 20px;
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-            line-height: 1.5;
-        }
+width:220px;
+height:100vh;
+position:fixed;
+background:#1f426b;
+padding-top:25px;
 
+}
 
-        .menu a:hover {
-            background-color: #28527f;
-        }
 
 
-        .menu a.active {
-            background-color: #2f82cc;
-        }
+.logo{
 
-        .menu .logout-link {
-            margin-top: 18px;
-        }
+color:white;
+font-size:22px;
+font-weight:bold;
+padding:20px;
 
+}
 
-        /* MAIN */
 
-        .main {
-            margin-left: 202px;
-            min-height: 100vh;
-        }
 
+.menu a{
 
-        /* TOP BAR */
+display:block;
+padding:14px 20px;
+color:white;
+text-decoration:none;
 
-        .topbar {
-            height: 65px;
+}
 
-            background-color: white;
 
-            border-bottom: 1px solid #ddd;
+.menu a:hover,
+.active{
 
-            display: flex;
+background:#2878c8;
 
-            justify-content: flex-end;
+}
 
-            align-items: center;
 
-            padding: 0 30px;
 
-        }
+.main{
 
+margin-left:220px;
 
-        .receptionist {
-            font-size: 15px;
-        }
+}
 
 
-        .profile {
-            text-decoration: none;
 
-            color: #17375e;
+.topbar{
 
-            font-size: 14px;
+height:65px;
+background:white;
+display:flex;
+justify-content:flex-end;
+align-items:center;
+padding:20px;
 
-            border: 1px solid #ddd;
+}
 
-            padding: 9px 15px;
 
-            border-radius: 6px;
-        }
+.profile{
 
+text-decoration:none;
+color:#1f426b;
+font-weight:bold;
 
-        .profile:hover {
-            background-color: #eef5fc;
-        }
+}
 
 
-        /* CONTENT */
 
-        .content {
-            padding: 30px 35px;
-        }
+.content{
 
+padding:30px;
 
-        .page-title {
-            font-size: 25px;
+}
 
-            margin-bottom: 5px;
-        }
 
 
-        .page-text {
-            color: #666;
+.box{
 
-            font-size: 14px;
+background:white;
+padding:25px;
+border-radius:8px;
+margin-bottom:25px;
 
-            margin-bottom: 25px;
-        }
+}
 
 
-        /* SEARCH */
 
-        .search-box {
-            background-color: white;
+input,select,textarea{
 
-            padding: 20px;
+width:100%;
+padding:10px;
+margin-bottom:15px;
 
-            border: 1px solid #ddd;
+}
 
-            border-radius: 10px;
 
-            margin-bottom: 20px;
-        }
+button{
 
+background:#1f426b;
+color:white;
+padding:10px 20px;
+border:0;
+border-radius:5px;
 
-        .search-form {
-            display: flex;
+}
 
-            gap: 10px;
-        }
 
 
-        .search-form input {
-            flex: 1;
+table{
 
-            padding: 11px;
+width:100%;
+border-collapse:collapse;
 
-            border: 1px solid #ccc;
+}
 
-            border-radius: 6px;
 
-            font-size: 14px;
-        }
 
+th{
 
-        .button {
-            background-color: #2878c8;
+background:#1f426b;
+color:white;
+padding:12px;
 
-            color: white;
+}
 
-            border: none;
 
-            padding: 11px 20px;
 
-            border-radius: 6px;
+td{
 
-            font-size: 14px;
+padding:12px;
+border-bottom:1px solid #ddd;
 
-            cursor: pointer;
+}
 
-            text-decoration: none;
 
-            display: inline-block;
-        }
 
-
-        .button:hover {
-            background-color: #1d65a8;
-        }
-
-
-        /* ADD BILL BUTTON */
-
-        .add-button {
-            display: inline-block;
-
-            text-decoration: none;
-
-            background-color: #2878c8;
-
-            color: white;
-
-            padding: 11px 18px;
-
-            border-radius: 6px;
-
-            font-size: 14px;
-
-            margin-bottom: 20px;
-        }
-
-
-        .add-button:hover {
-            background-color: #1d65a8;
-        }
-
-
-        /* BOX */
-
-        .box {
-            background-color: white;
-
-            padding: 25px;
-
-            border: 1px solid #ddd;
-
-            border-radius: 10px;
-
-            margin-bottom: 20px;
-        }
-
-
-        .box h2 {
-            font-size: 20px;
-
-            margin-bottom: 20px;
-        }
-
-
-        /* FORM */
-
-        .form-row {
-            display: flex;
-
-            gap: 20px;
-
-            margin-bottom: 18px;
-        }
-
-        .form-group {
-            width: 50%;
-        }
-
-
-        label {
-            display: block;
-            font-size: 14px;
-            margin-bottom: 7px;
-            color: #444;
-        }
-
-        input,select,textarea {
-            width: 100%;
-            padding: 11px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-
-        textarea {
-            height: 90px;
-            resize: none;
-        }
-
-        .bill-list {
-            background-color: white;
-            padding: 25px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-        }
-
-        .bill-list h2 {
-            font-size: 20px;
-            margin-bottom: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-            text-align: left;
-            font-size: 14px;
-        }
-
-
-        th {
-            background-color:   #1d65a8;
-            color: white;
-        }
-
-        .paid {
-            color: #16803c;
-            background-color: #e8f7ee;
-            padding: 5px 9px;
-            border-radius: 5px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .pending {
-            color: #b36b00;
-            background-color: #fff3d6;
-            padding: 5px 9px;
-            border-radius: 5px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-
-        .view-button {
-            text-decoration: none;
-            background-color: #2878c8;
-            color: white;
-            padding: 7px 12px;
-            border-radius: 5px;
-            font-size: 13px;
-        }
-
-        .view-button:hover {
-            background-color: #1d65a8;
-        }
-
-        .edit-button {
-            text-decoration: none;
-            background-color: #1d65a8;
-            color: white;
-            padding: 7px 12px;
-            border-radius: 5px;
-            font-size: 13px;
-            margin-left: 5px;
-        }
-
-
-        .edit-button:hover {
-            background-color: #1d65a8;
-        }
-
-        .back-button {
-            display: inline-block;
-            text-decoration: none;
-            color: #17375e;
-            border: 1px solid #17375e;
-            padding: 10px 18px;
-            border-radius: 6px;
-            font-size: 14px;
-            margin-left: 5px;
-        }
-
-
-        .back-button:hover {
-            background-color: #eef5fc;
-        }
-
-        .bill-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .detail {
-            padding: 12px;
-
-            background-color: #f8fafc;
-
-            border: 1px solid #ddd;
-
-            border-radius: 6px;
-        }
-
-
-        .detail strong {
-            display: block;
-
-            font-size: 12px;
-
-            color: #666;
-
-            margin-bottom: 5px;
-        }
-
-
-        .detail span {
-            font-size: 14px;
-
-            color: #172b4d;
-        }
-
-
-        .total {
-            margin-top: 20px;
-
-            padding: 15px;
-
-            background-color: #eef5fc;
-
-            border-radius: 6px;
-
-            text-align: right;
-
-            font-size: 18px;
-
-            font-weight: bold;
-
-            color: #17375e;
-        }
-
-
-    </style>
+</style>
 
 </head>
 
@@ -450,1030 +274,391 @@ $tab = $_GET["tab"] ?? "list";
 <body>
 
 
-<!-- ================================================= -->
-<!-- SIDEBAR -->
-<!-- ================================================= -->
 
 <div class="sidebar">
 
-    <div class="logo">
 
-        Medicare
-
-    </div>
-
-    <div class="menu">
+<div class="logo">
+Medicare
+</div>
 
 
-        <!-- DASHBOARD -->
-
-        <a href="dashboard_reciption.php">
-            Dashboard
-        </a>
+<div class="menu">
 
 
-        <!-- APPOINTMENTS -->
-
-        <a href="reciption_appointments.php">
-            Appointments
-        </a>
+<a href="dashboard_reciption.php">
+Dashboard
+</a>
 
 
-        <!-- PATIENTS -->
-
-        <a href="reciption_patients.php">
-            Patients
-        </a>
+<a href="reciption_appointments.php">
+Appointments
+</a>
 
 
-        <!-- BILLING -->
-
-        <a href="billing.php" class="active">
-            Billing
-        </a>
+<a href="reciption_patients.php">
+Patients
+</a>
 
 
-        <!-- QUEUE -->
-
-        <a href="reciption_queue.php">
-            Queue
-        </a>
+<a class="active" href="billing.php">
+Billing
+</a>
 
 
-        <!-- LOGOUT -->
-
-        <a href="logout" class="logout-link">
-            Logout
-        </a>
+<a href="reciption_queue.php">
+Queue
+</a>
 
 
-    </div>
+<a href="logout">
+Logout
+</a>
+
+
+</div>
+
 
 </div>
 
 
 
-<!-- ================================================= -->
-<!-- MAIN -->
-<!-- ================================================= -->
 
 <div class="main">
 
 
-    <!-- TOP BAR -->
+<div class="topbar">
 
-    <div class="topbar">
+<a class="profile" href="reciption_profile.php">
 
+Nusrat Jahan | Receptionist
 
-        <div class="receptionist">
-            Receptionist
-        </div>
+</a>
 
+</div>
 
-        <!-- PROFILE -->
 
-        <a href="reciption_profile.php"
-           class="profile">
 
-            Profile
+<div class="content">
 
-        </a>
 
+<h1>Billing</h1>
 
-    </div>
+<p>Create and manage patient bills</p>
 
 
 
-    <!-- ================================================= -->
-    <!-- CONTENT -->
-    <!-- ================================================= -->
 
-    <div class="content">
 
+<div class="box">
 
-        <h1 class="page-title">
-            Billing
-        </h1>
 
+<h2>Create Bill</h2>
 
-        <p class="page-text">
-            Manage patient bills and payments
-        </p>
 
+<form method="post">
 
 
-        <!-- ================================================= -->
-        <!-- BILL LIST -->
-        <!-- ================================================= -->
 
-        <?php if ($tab == "list") { ?>
+<input 
+type="text"
+name="invoice_id"
+placeholder="Invoice ID"
+required>
 
 
-            <!-- SEARCH -->
 
-            <div class="search-box">
 
+<select name="patient_id">
 
-                <form
-                    class="search-form"
-                    method="get"
-                    action="billing.php"
-                >
 
+<option>Select Patient</option>
 
-                    <input
-                        type="text"
-                        name="search"
-                        placeholder="Search by patient name or invoice ID"
-                    >
 
+<?php
 
-                    <button
-                        type="submit"
-                        class="button"
-                    >
-                        Search
-                    </button>
+$p=mysqli_query($conn,
 
+"SELECT patient_id,name FROM patients");
 
-                </form>
 
+while($row=mysqli_fetch_assoc($p)){
 
-            </div>
+?>
 
 
+<option value="<?php echo $row['patient_id'];?>">
 
-            <!-- ADD BILL -->
+<?php echo $row['name'];?>
 
-            <a
-                href="billing.php?tab=add"
-                class="add-button"
-            >
-                Add New Bill
-            </a>
+</option>
 
 
+<?php } ?>
 
-            <!-- BILL TABLE -->
 
-            <div class="bill-list">
+</select>
 
 
-                <h2>
-                    Billing List
-                </h2>
 
 
 
-                <table>
 
+<select name="doctor_id">
 
-                    <tr>
 
-                        <th>
-                            Invoice ID
-                        </th>
+<option>Select Doctor</option>
 
-                        <th>
-                            Patient
-                        </th>
 
-                        <th>
-                            Doctor
-                        </th>
+<?php
 
-                        <th>
-                            Amount
-                        </th>
 
-                        <th>
-                            Status
-                        </th>
+$d=mysqli_query($conn,
 
-                        <th>
-                            Action
-                        </th>
 
-                    </tr>
+"SELECT doctors.doctor_id,users.name
 
+FROM doctors
 
+JOIN users
 
-                    <tr>
+ON doctors.user_id=users.id");
 
-                        <td>
-                            INV001
-                        </td>
 
-                        <td>
-                            John Doe
-                        </td>
+while($doc=mysqli_fetch_assoc($d)){
 
-                        <td>
-                            Dr. Rahman
-                        </td>
 
-                        <td>
-                            ৳1,500
-                        </td>
+?>
 
-                        <td>
 
-                            <span class="paid">
-                                Paid
-                            </span>
+<option value="<?php echo $doc['doctor_id'];?>">
 
-                        </td>
+<?php echo $doc['name'];?>
 
-                        <td>
+</option>
 
-                            <a
-                                href="billing.php?tab=view"
-                                class="view-button"
-                            >
-                                View
-                            </a>
 
+<?php } ?>
 
-                            <a
-                                href="billing.php?tab=edit"
-                                class="edit-button"
-                            >
-                                Edit
-                            </a>
 
-                        </td>
+</select>
 
-                    </tr>
 
 
 
-                    <tr>
 
-                        <td>
-                            INV002
-                        </td>
+<input 
+type="number"
+name="consultation_fee"
+placeholder="Consultation Fee"
+required>
 
-                        <td>
-                            Sara Ahmed
-                        </td>
 
-                        <td>
-                            Dr. Karim
-                        </td>
 
-                        <td>
-                            ৳2,000
-                        </td>
 
-                        <td>
+<select name="payment_method">
 
-                            <span class="pending">
-                                Pending
-                            </span>
+<option>Cash</option>
+<option>Card</option>
+<option>Online</option>
 
-                        </td>
+</select>
 
-                        <td>
 
-                            <a
-                                href="billing.php?tab=view"
-                                class="view-button"
-                            >
-                                View
-                            </a>
 
+<textarea 
+name="notes"
+placeholder="Notes"></textarea>
 
-                            <a
-                                href="billing.php?tab=edit"
-                                class="edit-button"
-                            >
-                                Edit
-                            </a>
 
-                        </td>
 
-                    </tr>
 
+<button name="save_bill">
 
+Generate Bill
 
-                    <tr>
+</button>
 
-                        <td>
-                            INV003
-                        </td>
 
-                        <td>
-                            Rahim Khan
-                        </td>
+</form>
 
-                        <td>
-                            Dr. Rahman
-                        </td>
 
-                        <td>
-                            ৳1,200
-                        </td>
+</div>
 
-                        <td>
 
-                            <span class="paid">
-                                Paid
-                            </span>
 
-                        </td>
 
-                        <td>
 
-                            <a
-                                href="billing.php?tab=view"
-                                class="view-button"
-                            >
-                                View
-                            </a>
 
 
-                            <a
-                                href="billing.php?tab=edit"
-                                class="edit-button"
-                            >
-                                Edit
-                            </a>
+<div class="box">
 
-                        </td>
 
-                    </tr>
+<form method="get">
 
 
-                </table>
+<input 
+type="text"
+name="search"
+placeholder="Search invoice or patient"
+value="<?php echo $search;?>">
 
 
-            </div>
+<button>
+Search
+</button>
 
 
+</form>
 
-        <!-- ================================================= -->
-        <!-- ADD BILL -->
-        <!-- ================================================= -->
 
-        <?php } elseif ($tab == "add") { ?>
+</div>
 
 
-            <div class="box">
 
 
-                <h2>
-                    Add New Bill
-                </h2>
 
 
-                <form
-                    method="post"
-                    action="billing.php"
-                >
 
+<div class="box">
 
-                    <!-- ROW 1 -->
 
-                    <div class="form-row">
+<h2>Bill List</h2>
 
 
-                        <div class="form-group">
+<table>
 
-                            <label>
-                                Invoice ID
-                            </label>
 
-                            <input
-                                type="text"
-                                name="invoice_id"
-                                placeholder="Enter invoice ID"
-                            >
+<tr>
 
-                        </div>
+<th>Invoice</th>
+<th>Patient</th>
+<th>Doctor</th>
+<th>Amount</th>
+<th>Status</th>
+<th>Action</th>
 
+</tr>
 
 
-                        <div class="form-group">
 
-                            <label>
-                                Patient Name
-                            </label>
+<?php
 
-                            <input
-                                type="text"
-                                name="patient_name"
-                                placeholder="Enter patient name"
-                            >
 
-                        </div>
+$result=mysqli_query($conn,
 
 
-                    </div>
+"SELECT
 
+bills.*,
 
+patients.name AS patient_name,
 
-                    <!-- ROW 2 -->
+users.name AS doctor_name
 
-                    <div class="form-row">
 
+FROM bills
 
-                        <div class="form-group">
 
-                            <label>
-                                Doctor
-                            </label>
+LEFT JOIN patients
 
+ON bills.patient_id=patients.patient_id
 
-                            <select name="doctor">
 
-                                <option>
-                                    Select Doctor
-                                </option>
+LEFT JOIN doctors
 
-                                <option>
-                                    Dr. Rahman
-                                </option>
+ON bills.doctor_id=doctors.doctor_id
 
-                                <option>
-                                    Dr. Karim
-                                </option>
 
-                            </select>
+LEFT JOIN users
 
-                        </div>
+ON doctors.user_id=users.id
 
 
+WHERE 
 
-                        <div class="form-group">
+bills.invoice_id LIKE '%$search%'
 
-                            <label>
-                                Bill Date
-                            </label>
+OR patients.name LIKE '%$search%'
 
 
-                            <input
-                                type="date"
-                                name="bill_date"
-                            >
+ORDER BY bill_id DESC"
 
-                        </div>
+);
 
 
-                    </div>
 
+while($row=mysqli_fetch_assoc($result)){
 
 
-                    <!-- ROW 3 -->
+?>
 
-                    <div class="form-row">
 
+<tr>
 
-                        <div class="form-group">
 
-                            <label>
-                                Consultation Fee
-                            </label>
+<td>
+<?php echo $row['invoice_id'];?>
+</td>
 
 
-                            <input
-                                type="number"
-                                name="consultation_fee"
-                                placeholder="Enter amount"
-                            >
+<td>
+<?php echo $row['patient_name'];?>
+</td>
 
-                        </div>
 
+<td>
+<?php echo $row['doctor_name'];?>
+</td>
 
 
-                        <div class="form-group">
+<td>
+<?php echo $row['total_amount'];?>
+</td>
 
-                            <label>
-                                Medicine / Other Fee
-                            </label>
 
+<td>
+<?php echo $row['payment_status'];?>
+</td>
 
-                            <input
-                                type="number"
-                                name="other_fee"
-                                placeholder="Enter amount"
-                            >
 
-                        </div>
 
+<td>
 
-                    </div>
 
+<?php if($row['payment_status']=="Pending"){ ?>
 
 
-                    <!-- ROW 4 -->
+<a href="billing.php?paid=<?php echo $row['bill_id'];?>">
 
-                    <div class="form-row">
+<button>
+Mark Paid
+</button>
 
+</a>
 
-                        <div class="form-group">
 
-                            <label>
-                                Payment Status
-                            </label>
+<?php } else { echo "Completed"; } ?>
 
 
-                            <select name="payment_status">
+</td>
 
-                                <option>
-                                    Select Status
-                                </option>
 
-                                <option>
-                                    Paid
-                                </option>
+</tr>
 
-                                <option>
-                                    Pending
-                                </option>
 
-                            </select>
+<?php } ?>
 
-                        </div>
 
+</table>
 
 
-                        <div class="form-group">
+</div>
 
-                            <label>
-                                Payment Method
-                            </label>
 
 
-                            <select name="payment_method">
+</div>
 
-                                <option>
-                                    Select Method
-                                </option>
-
-                                <option>
-                                    Cash
-                                </option>
-
-                                <option>
-                                    Card
-                                </option>
-
-                                <option>
-                                    Mobile Banking
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-                    </div>
-
-
-
-                    <!-- NOTES -->
-
-                    <div class="form-row">
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Notes
-                            </label>
-
-
-                            <textarea
-                                name="notes"
-                                placeholder="Enter notes"
-                            ></textarea>
-
-                        </div>
-
-
-                    </div>
-
-
-
-                    <!-- BUTTON -->
-
-                    <button
-                        type="submit"
-                        class="button"
-                    >
-                        Add Bill
-                    </button>
-
-
-                    <a
-                        href="billing.php"
-                        class="back-button"
-                    >
-                        Cancel
-                    </a>
-
-
-                </form>
-
-
-            </div>
-
-
-
-        <!-- ================================================= -->
-        <!-- VIEW BILL -->
-        <!-- ================================================= -->
-
-        <?php } elseif ($tab == "view") { ?>
-
-
-            <div class="box">
-
-
-                <h2>
-                    Bill Details
-                </h2>
-
-
-                <div class="bill-details">
-
-
-                    <div class="detail">
-
-                        <strong>
-                            Invoice ID
-                        </strong>
-
-                        <span>
-                            INV001
-                        </span>
-
-                    </div>
-
-
-
-                    <div class="detail">
-
-                        <strong>
-                            Bill Date
-                        </strong>
-
-                        <span>
-                            26 August 2026
-                        </span>
-
-                    </div>
-
-
-
-                    <div class="detail">
-
-                        <strong>
-                            Patient Name
-                        </strong>
-
-                        <span>
-                            John Doe
-                        </span>
-
-                    </div>
-
-
-
-                    <div class="detail">
-
-                        <strong>
-                            Doctor
-                        </strong>
-
-                        <span>
-                            Dr. Rahman
-                        </span>
-
-                    </div>
-
-
-
-                    <div class="detail">
-
-                        <strong>
-                            Consultation Fee
-                        </strong>
-
-                        <span>
-                            ৳1,000
-                        </span>
-
-                    </div>
-
-
-
-                    <div class="detail">
-
-                        <strong>
-                            Other Fee
-                        </strong>
-
-                        <span>
-                            ৳500
-                        </span>
-
-                    </div>
-
-
-
-                    <div class="detail">
-
-                        <strong>
-                            Payment Method
-                        </strong>
-
-                        <span>
-                            Cash
-                        </span>
-
-                    </div>
-
-
-
-                    <div class="detail">
-
-                        <strong>
-                            Payment Status
-                        </strong>
-
-                        <span>
-                            Paid
-                        </span>
-
-                    </div>
-
-
-                </div>
-
-
-
-                <div class="total">
-
-                    Total Amount: ৳1,500
-
-                </div>
-
-
-                <br>
-
-
-                <a
-                    href="billing.php"
-                    class="back-button"
-                >
-                    Back to Billing
-                </a>
-
-
-            </div>
-
-
-
-        <!-- ================================================= -->
-        <!-- EDIT BILL -->
-        <!-- ================================================= -->
-
-        <?php } elseif ($tab == "edit") { ?>
-
-
-            <div class="box">
-
-
-                <h2>
-                    Edit Bill
-                </h2>
-
-
-                <form
-                    method="post"
-                    action="billing.php"
-                >
-
-
-                    <!-- ROW 1 -->
-
-                    <div class="form-row">
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Invoice ID
-                            </label>
-
-
-                            <input
-                                type="text"
-                                name="invoice_id"
-                                value="INV001"
-                            >
-
-                        </div>
-
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Patient Name
-                            </label>
-
-
-                            <input
-                                type="text"
-                                name="patient_name"
-                                value="John Doe"
-                            >
-
-                        </div>
-
-
-                    </div>
-
-
-
-                    <!-- ROW 2 -->
-
-                    <div class="form-row">
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Doctor
-                            </label>
-
-
-                            <select name="doctor">
-
-                                <option selected>
-                                    Dr. Rahman
-                                </option>
-
-                                <option>
-                                    Dr. Karim
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Bill Date
-                            </label>
-
-
-                            <input
-                                type="date"
-                                name="bill_date"
-                                value="2026-08-26"
-                            >
-
-                        </div>
-
-
-                    </div>
-
-
-
-                    <!-- ROW 3 -->
-
-                    <div class="form-row">
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Consultation Fee
-                            </label>
-
-
-                            <input
-                                type="number"
-                                name="consultation_fee"
-                                value="1000"
-                            >
-
-                        </div>
-
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Other Fee
-                            </label>
-
-
-                            <input
-                                type="number"
-                                name="other_fee"
-                                value="500"
-                            >
-
-                        </div>
-
-
-                    </div>
-
-
-
-                    <!-- ROW 4 -->
-
-                    <div class="form-row">
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Payment Status
-                            </label>
-
-
-                            <select name="payment_status">
-
-                                <option selected>
-                                    Paid
-                                </option>
-
-                                <option>
-                                    Pending
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Payment Method
-                            </label>
-
-
-                            <select name="payment_method">
-
-                                <option selected>
-                                    Cash
-                                </option>
-
-                                <option>
-                                    Card
-                                </option>
-
-                                <option>
-                                    Mobile Banking
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-                    </div>
-
-
-
-                    <!-- BUTTON -->
-
-                    <button
-                        type="submit"
-                        class="button"
-                    >
-                        Save Changes
-                    </button>
-
-
-                    <a
-                        href="billing.php"
-                        class="back-button"
-                    >
-                        Cancel
-                    </a>
-
-
-                </form>
-
-
-            </div>
-
-
-        <?php } ?>
-
-
-    </div>
 
 </div>
 

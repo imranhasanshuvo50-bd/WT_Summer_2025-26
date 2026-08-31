@@ -1,738 +1,885 @@
 <?php
 
-$tab = "list";
+include "config.php";
 
-if (isset($_GET["tab"])) {
-    $tab = $_GET["tab"];
+
+$tab = $_GET['tab'] ?? "list";
+
+
+// ADD PATIENT
+
+// ADD PATIENT
+
+if(isset($_POST['add_patient'])){
+
+
+    $patient_code = $_POST['patient_code'];
+
+    $name = $_POST['name'];
+
+    $age = $_POST['age'];
+
+    $phone = $_POST['phone'];
+
+    $email = $_POST['email'];
+
+    $address = $_POST['address'];
+
+    $doctor_id = $_POST['doctor_id'];
+
+
+
+    // 1. Create Patient Login Account
+
+
+    $password = "1234";
+
+
+    $user_sql = "INSERT INTO users
+
+    (
+    name,
+    email,
+    phone,
+    pass,
+    role,
+    status
+    )
+
+
+    VALUES
+
+    (
+
+    '$name',
+
+    '$email',
+
+    '$phone',
+
+    '$password',
+
+    'Patient',
+
+    'active'
+
+    )";
+
+
+
+    mysqli_query($conn,$user_sql);
+
+
+
+
+    // Get created user id
+
+
+    $user_id = mysqli_insert_id($conn);
+
+
+
+
+
+    // 2. Save Patient Details
+
+
+    $patient_sql = "INSERT INTO patients
+
+    (
+
+    user_id,
+
+    patient_code,
+
+    name,
+
+    age,
+
+    phone,
+
+    email,
+
+    address,
+
+    doctor_id
+
+    )
+
+
+    VALUES
+
+
+    (
+
+    '$user_id',
+
+    '$patient_code',
+
+    '$name',
+
+    '$age',
+
+    '$phone',
+
+    '$email',
+
+    '$address',
+
+    '$doctor_id'
+
+    )";
+
+
+
+
+    mysqli_query($conn,$patient_sql);
+
+
+
+    header("Location: reciption_patients.php");
+
+    exit();
+
+
 }
+// SEARCH
+
+
+$search = "";
+
+if(isset($_GET['search'])){
+
+    $search = $_GET['search'];
+
+}
+
 
 ?>
 
+
+
 <!DOCTYPE html>
+
 <html>
 
 <head>
 
-    <title>Patients</title>
-
-    <style>
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            background-color: #f5f7fa;
-            color: #172b4d;
-        }
-
-         .logo {
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
-            padding: 0 20px 35px;
-        }
-
-        .logo span {
-            display: block;
-            font-size: 12px;
-            font-weight: normal;
-            margin-top: 5px;
-            color: #dbeafe;
-        }
-
-        .sidebar {
-            width: 230px;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            background-color: #17375e;
-            padding-top: 25px;
-        }
-
-        .menu a {
-            display: block;
-            padding: 14px 25px;
-            color: white;
-            text-decoration: none;
-            font-size: 15px;
-        }
-
-        .menu a:hover {
-            background-color: #24558b;
-        }
-
-        .menu a.active {
-            background-color: #2878c8;
-        }
-
-        .main {
-            margin-left: 230px;
-            min-height: 100vh;
-        }
-
-        .topbar {
-            height: 70px;
-            background-color: white;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            padding: 0 30px;
-            gap: 20px;
-        }
-
-        .receptionist {
-            font-size: 15px;
-        }
-
-        .profile {
-            text-decoration: none;
-            color: #17375e;
-            font-size: 14px;
-            border: 1px solid #ddd;
-            padding: 9px 15px;
-            border-radius: 6px;
-        }
-
-        .profile:hover {
-            background-color: #eef5fc;
-        }
-
-        .content {
-            padding: 30px 35px;
-        }
-
-        .page-title {
-            font-size: 25px;
-            margin-bottom: 5px;
-        }
-
-        .page-text {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
+<title>Patients</title>
 
-        .search-box {
-            background-color: white;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
 
+<style>
 
-        .search-form {
-            display: flex;
-            gap: 10px;
-        }
 
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
 
-        .search-form input {
-            flex: 1;
-            padding: 11px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-        }
 
+body{
 
-        .button {
-            background-color: #2878c8;
-            color: white;
-            border: none;
-            padding: 11px 20px;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-        }
+background:#f5f7fa;
 
+color:#172b4d;
 
-        .button:hover {
-            background-color: #1d65a8;
-        }
+}
 
 
-        .add-button {
-            display: inline-block;
-            text-decoration: none;
-            background-color: #2878c8;
-            color: white;
-            padding: 11px 18px;
-            border-radius: 6px;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
+.sidebar{
 
+width:230px;
 
-        .add-button:hover {
-            background-color: #1d65a8;
-        }
+height:100vh;
 
+position:fixed;
 
-        /* FORM BOX */
+background:#17375e;
 
-        .box {
-            background-color: white;
+padding-top:25px;
 
-            padding: 25px;
+}
 
-            border: 1px solid #ddd;
 
-            border-radius: 10px;
 
-            margin-bottom: 20px;
-        }
+.logo{
 
+color:white;
 
-        .box h2 {
-            font-size: 20px;
+font-size:22px;
 
-            margin-bottom: 20px;
-        }
+font-weight:bold;
 
+padding:0 25px 35px;
 
-        .form-row {
-            display: flex;
+}
 
-            gap: 20px;
 
-            margin-bottom: 18px;
-        }
+.menu a{
 
+display:block;
 
-        .form-group {
-            width: 50%;
-        }
+padding:14px 25px;
 
+color:white;
 
-        label {
-            display: block;
+text-decoration:none;
 
-            font-size: 14px;
+}
 
-            margin-bottom: 7px;
 
-            color: #444;
-        }
+.menu a:hover,
+.menu .active{
 
+background:#2878c8;
 
-        input,
-        select {
-            width: 100%;
+}
 
-            padding: 11px;
 
-            border: 1px solid #ccc;
 
-            border-radius: 6px;
+.main{
 
-            font-size: 14px;
-        }
+margin-left:230px;
 
-        .back-button {
-            display: inline-block;
+}
 
-            text-decoration: none;
 
-            color: #17375e;
 
-            border: 1px solid #17375e;
+.topbar{
 
-            padding: 10px 18px;
+height:70px;
 
-            border-radius: 6px;
+background:white;
 
-            font-size: 14px;
+display:flex;
 
-            margin-left: 5px;
-        }
+justify-content:flex-end;
 
+align-items:center;
 
-        .back-button:hover {
-            background-color: #eef5fc;
-        }
+padding:0 30px;
 
+}
 
-        /* PATIENT LIST */
 
-        .patient-list {
-            background-color: white;
 
-            padding: 25px;
+.profile{
 
-            border: 1px solid #ddd;
+text-decoration:none;
 
-            border-radius: 10px;
-        }
+color:#17375e;
 
+}
 
-        .patient-list h2 {
-            font-size: 20px;
 
-            margin-bottom: 20px;
-        }
 
+.content{
 
-        table {
-            width: 100%;
+padding:30px;
 
-            border-collapse: collapse;
-        }
+}
 
 
-        th,td {
-            padding: 12px;
 
-            border-bottom: 1px solid #ddd;
+h1{
 
-            text-align: left;
+color:#17375e;
 
-            font-size: 14px;
-        }
+margin-bottom:10px;
 
+}
 
-        th {
-            background-color: #17375e;
 
-            color: white;
-        }
+p{
 
+color:#666;
 
-        .view-button {
-            text-decoration: none;
+margin-bottom:20px;
 
-            background-color: #2878c8;
+}
 
-            color: white;
 
-            padding: 7px 12px;
 
-            border-radius: 5px;
+.box,
+.table-box{
 
-            font-size: 13px;
-        }
+background:white;
 
+padding:25px;
 
-        .view-button:hover {
-            background-color: #1d65a8;
-        }
+border-radius:10px;
 
+border:1px solid #ddd;
 
-        .edit-button {
-            text-decoration: none;
+margin-bottom:20px;
 
-            background-color: #2878c8;
+}
 
-            color: white;
 
-            padding: 7px 12px;
 
-            border-radius: 5px;
+input,
+select{
 
-            font-size: 13px;
+width:100%;
 
-            margin-left: 5px;
-        }
+padding:10px;
 
+border:1px solid #ccc;
 
-        .edit-button:hover {
-            background-color: #1d65a8;
-        }
+border-radius:5px;
 
+}
 
-        /* MOBILE */
 
-        @media (max-width: 800px) {
 
-            .sidebar {
-                width: 190px;
-            }
+.form-row{
 
+display:flex;
 
-            .main {
-                margin-left: 190px;
-            }
+gap:20px;
 
+margin-bottom:15px;
 
-            .form-row {
-                flex-direction: column;
-            }
+}
 
 
-            .form-group {
-                width: 100%;
-            }
 
+.form-group{
 
-            table {
-                font-size: 12px;
-            }
+width:50%;
 
-        }
+}
 
-    </style>
+
+
+button,
+.add-btn{
+
+background:#2878c8;
+
+color:white;
+
+border:none;
+
+padding:10px 18px;
+
+border-radius:5px;
+
+cursor:pointer;
+
+text-decoration:none;
+
+}
+
+
+
+table{
+
+width:100%;
+
+border-collapse:collapse;
+
+}
+
+
+
+th{
+
+background:#17375e;
+
+color:white;
+
+padding:12px;
+
+text-align:left;
+
+}
+
+
+
+td{
+
+padding:12px;
+
+border-bottom:1px solid #ddd;
+
+}
+
+
+
+.action{
+
+text-decoration:none;
+
+background:#2878c8;
+
+color:white;
+
+padding:6px 10px;
+
+border-radius:5px;
+
+font-size:13px;
+
+}
+
+
+
+.delete{
+
+background:#dc3545;
+
+}
+
+
+
+.search{
+
+display:flex;
+
+gap:10px;
+
+margin-bottom:20px;
+
+}
+
+
+
+</style>
+
 
 </head>
 
 
 <body>
 
-    <div class="sidebar">
 
-        <div class="logo">Medicare </div>
 
-        <div class="menu">
+<div class="sidebar">
 
-            <a href="dashboard_reciption.php"> Dashboard </a>
-            <a href="reciption_appointments.php"> Appointments </a>
-            <a href="reciption_patients.php" class="active"> Patients </a>
-            <a href="billing.php"> Billing </a>
-            <a href="reciption_queue.php">  Queue </a>
-            <a href="logout">   Logout </a>
 
-        </div>
+<div class="logo">
 
-    </div>
+Medicare
+
+</div>
+
+
+<div class="menu">
+
+<a href="dashboard_reciption.php">
+Dashboard
+</a>
+
+<a href="reciption_appointments.php">
+Appointments
+</a>
+
+
+<a href="reciption_patients.php"
+class="active">
+
+Patients
+
+</a>
+
+
+<a href="billing.php">
+
+Billing
+
+</a>
+
+
+<a href="reciption_queue.php">
+
+Queue
+
+</a>
+
+
+<a href="logout">
+
+Logout
+
+</a>
+
+
+</div>
+
+
+</div>
+
+
 
 
 <div class="main">
 
 
+<div class="topbar">
 
-    <div class="topbar">
+<a href="reciption_profile.php"
+class="profile">
 
-        <div class="receptionist">  Receptionist </div>
+Nusrat Jahan | Receptionist
 
-        <a href="reciption_profile.php"  class="profile">Profile </a>
-
-    </div>
-
-
-    <div class="content">
-
-
-        <h1 class="page-title">  Patients  </h1>
-
-        <p class="page-text"> Manage patient information </p>
-
-
-        <div class="search-box">
-
-            <form class="search-form" method="get" action="reciption_patients.php" >
-
-                <input type="text" name="search" placeholder="Search patient by name or ID" >
-                <button type="submit" class="button" >  Search</button>
-
-            </form>
-
-        </div>
-
-
-        <?php
-
-        if ($tab == "add") {
-
-        ?>
-            <div class="box">
-
-                <h2>Add New Patient </h2>
-                <form  method="post" action="reciption_patients.php">
-                    <div class="form-row">
-
-                        <div class="form-group">
-
-                            <label> Full Name </label>
-                            <input  type="text"  name="name" placeholder="Enter patient name">
-
-                        </div>
-
-                        <div class="form-group">
-                            <label> Patient ID </label>
-                            <input type="text" name="patient_id"placeholder="Enter patient ID">
-                        </div>
-
-                    </div>
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-
-                            <label>  Age </label>
-                            <input type="number"  name="age" placeholder="Enter age">
-
-                        </div>
-
-                        <div class="form-group">
-
-                            <label>Phone </label>
-                            <input type="text"  name="phone" placeholder="Enter phone number" >
-
-                        </div>
-
-                    </div>
-
-                    <div class="form-row">
-
-
-                        <div class="form-group">
-
-                            <label>Email </label>
-                            <input type="email" name="email" placeholder="Enter email" >
-
-                        </div>
-
-                        <div class="form-group">
-
-                            <label>Doctor </label>
-                            <select name="doctor">
-                                <option value="">  Select Doctor </option>
-                                <option value="Dr. Rahman">  Dr. Rahman</option>
-                                <option value="Dr. Karim">   Dr. Karim </option>
-                            </select>
-
-                        </div>
-
-                    </div>
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-
-                            <label> Address </label>
-                            <input type="text" name="address" placeholder="Enter address"  >
-
-                        </div>
-
-                    </div>
-
-                    <button type="submit"  class="button">Add Patient </button>
-
-                    <a href="reciption_patients.php" class="back-button">   Cancel</a>
-                    
-                </form>
-
-            </div>
-
-        <?php } ?>
-
-
-        <?php
-
-        if ($tab == "list") {
-        ?>
-            <a href="reciption_patients.php?tab=add" class="add-button">  Add New Patient </a>
-            
-            <div class="patient-list">
-
-                <h2>Patient List </h2>
-
-                <table>
-
-
-                    <tr>
-                        <th> Patient ID </th>
-                        <th> Name </th>
-                        <th> Age </th>
-                        <th> Phone </th>
-                        <th> Doctor </th>
-                        <th>Action</th>
-                    </tr>
-
-                    <tr>
-
-                        <td>  P001 </td>
-                        <td> John Doe </td>
-                        <td> 25 </td>
-                        <td>  01700000000 </td>
-                        <td> Dr. Rahman</td>
-
-                        <td>
-                            <a href="reciption_patients.php?tab=view" class="view-button"> View </a>
-                            <a href="reciption_patients.php?tab=edit" class="edit-button" > Edit </a>
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td> P002 </td>
-                        <td> Sara Ahmed</td>
-                        <td> 30 </td>
-                        <td>01800000000 </td>
-                        <td> Dr. Karim </td>
-
-                        <td>
-                            <a href="reciption_patients.php?tab=view" class="view-button" > View </a>
-                            <a href="reciption_patients.php?tab=edit"  class="edit-button"> Edit </a>
-                        </td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td> P003 </td>
-                        <td> Rahim Khan </td>
-                        <td>  28</td>
-                        <td> 01900000000</td>
-                        <td> Dr. Rahman </td>
-
-                        <td>
-                            <a href="reciption_patients.php?tab=view" class="view-button" > View </a>
-                            <a href="reciption_patients.php?tab=edit"  class="edit-button">  Edit </a>
-
-                        </td>
-
-                    </tr>
-                </table>
-            </div>
-        <?php } ?>
-
-        <?php
-
-        if ($tab == "view") {
-
-        ?>
-            <div class="box">
-                <h2>Patient Details </h2>
-                <p>
-                 <strong>Patient ID:</strong>
-                    P001
-                </p>
-
-                <br>
-
-                <p>
-                    <strong>Name:</strong>
-                    John Doe
-                </p>
-
-                <br>
-
-                <p>
-                    <strong>Age:</strong>
-                    25
-                </p>
-
-                <br>
-
-                <p>
-                    <strong>Phone:</strong>
-                    01700000000
-                </p>
-
-                <br>
-
-                <p>
-                    <strong>Doctor:</strong>
-                    Dr. Rahman
-                </p>
-
-                <br>
-
-                <p>
-                    <strong>Email:</strong>
-                    john@gmail.com
-                </p>
-
-                <br>
-
-                <p>
-                    <strong>Address:</strong>
-                    Dhaka, Bangladesh
-                </p>
-
-                <br>
-
-                <a href="reciption_patients.php" class="back-button"> Back</a>
-
-            </div>
-
-        <?php } ?>
-
-        <?php
-
-        if ($tab == "edit") {
-
-        ?>
-
-
-            <div class="box">
-
-
-                <h2> Edit Patient </h2>
-
-                <form  method="post"  action="reciption_patients.php" >
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-                            <label>  Patient ID</label>
-                            <input type="text"  value="P001" >
-                        </div>
-
-                        <div class="form-group">
-                            <label> Full Name</label>
-                            <input type="text" value="John Doe">
-                        </div>
-
-
-                    </div>
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-                            <label> Age</label>
-                            <input type="number" value="25" >
-                        </div>
-
-                        <div class="form-group">
-                            <label> Phone </label>
-                            <input type="text" value="01700000000">
-                        </div>
-
-                    </div>
-
-
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" value="john@gmail.com">
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label> Doctor </label>
-
-                            <select>
-                                <option selected> Dr. Rahman] </option>
-                                <option> Dr. Karim </option>
-                            </select>
-
-                        </div>
-                    </div>
-
-                    <button type="submit" class="button" >  Save Changes  </button>
-                    <a href="reciption_patients.php" class="back-button" > Cancel</a>
-
-                </form>
-            </div>
-
-        <?php } ?>
-    </div>
+</a>
 
 </div>
 
+
+
+
+<div class="content">
+
+
+<h1>
+Patients
+</h1>
+
+
+<p>
+Manage patient information
+</p>
+
+
+
+
+<?php if($tab=="add"){ ?>
+
+
+
+<div class="box">
+
+
+<h2>Add Patient</h2>
+
+
+<form method="post">
+
+
+
+<div class="form-row">
+
+
+<div class="form-group">
+
+<label>Patient ID</label>
+
+<input type="text"
+name="patient_code"
+placeholder="P001">
+
+</div>
+
+
+
+<div class="form-group">
+
+<label>Name</label>
+
+<input type="text"
+name="name">
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="form-row">
+
+
+<div class="form-group">
+
+<label>Age</label>
+
+<input type="number"
+name="age">
+
+</div>
+
+
+
+<div class="form-group">
+
+<label>Phone</label>
+
+<input type="text"
+name="phone">
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+<div class="form-row">
+
+
+<div class="form-group">
+
+<label>Email</label>
+
+<input type="email"
+name="email">
+
+</div>
+
+
+
+<div class="form-group">
+
+<label>Doctor</label>
+
+
+<select name="doctor_id">
+
+
+<option>Select Doctor</option>
+
+
+<?php
+
+
+$doctors=mysqli_query($conn,
+
+"SELECT doctors.doctor_id,
+users.name
+
+FROM doctors
+
+JOIN users
+
+ON doctors.user_id=users.id");
+
+
+while($d=mysqli_fetch_assoc($doctors)){
+
+
+echo "
+
+<option value='".$d['doctor_id']."'>
+".$d['name']."
+</option>";
+
+
+}
+
+
+?>
+
+
+</select>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+<div class="form-row">
+
+<div class="form-group">
+
+<label>Address</label>
+
+<input type="text"
+name="address">
+
+
+</div>
+
+
+</div>
+
+
+
+
+<button name="add_patient">
+
+Save Patient
+
+</button>
+
+
+
+</form>
+
+
+</div>
+
+
+
+<?php } ?>
+
+
+
+
+
+
+
+<?php if($tab=="list"){ ?>
+
+
+
+<a href="reciption_patients.php?tab=add"
+class="add-btn">
+
+Add New Patient
+
+</a>
+
+
+
+<br><br>
+
+
+
+
+<form class="search">
+
+
+<input type="text"
+name="search"
+placeholder="Search patient">
+
+
+<button>
+Search
+</button>
+
+
+</form>
+
+
+
+
+<div class="table-box">
+
+
+<h2>
+Patient List
+</h2>
+
+
+<table>
+
+
+<tr>
+
+<th>ID</th>
+
+<th>Name</th>
+
+<th>Age</th>
+
+<th>Phone</th>
+
+<th>Action</th>
+
+
+</tr>
+
+
+
+<?php
+
+
+$sql="SELECT *
+
+FROM patients
+
+WHERE name LIKE '%$search%'";
+
+
+$result=mysqli_query($conn,$sql);
+
+
+
+while($row=mysqli_fetch_assoc($result)){
+
+
+?>
+
+
+<tr>
+
+
+<td>
+<?php echo $row['patient_code']; ?>
+</td>
+
+
+<td>
+<?php echo $row['name']; ?>
+</td>
+
+
+<td>
+<?php echo $row['age']; ?>
+</td>
+
+
+<td>
+<?php echo $row['phone']; ?>
+</td>
+
+
+
+<td>
+
+
+<a class="action"
+href="reciption_patients.php?delete=<?php echo $row['patient_id']; ?>">
+
+Delete
+
+</a>
+
+
+</td>
+
+
+</tr>
+
+
+
+<?php } ?>
+
+
+
+</table>
+
+
+</div>
+
+
+<?php } ?>
+
+
+
+</div>
+
+
+</div>
+
+
 </body>
+
 
 </html>

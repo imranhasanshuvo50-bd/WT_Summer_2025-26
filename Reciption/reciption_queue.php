@@ -1,342 +1,922 @@
 <?php
-session_start();
 
-if (!isset($_SESSION['queue'])) {
-    $_SESSION['queue'] = [
-        ["01", "John Doe", "Dr. Rashedin", "10 minutes", "Waiting"],
-        ["02", "Sara Ahmed", "Dr. Karim", "18 minutes", "Waiting"],
-        ["03", "Rahim Hasan", "Dr. Rashedin", "25 minutes", "Waiting"],
-        ["04", "Nusrat Jahan", "Dr. Karim", "32 minutes", "Waiting"]
-    ];
+include "config.php";
+
+
+// ADD QUEUE
+
+if(isset($_POST['add_queue'])){
+
+
+    $patient_id = $_POST['patient_id'];
+
+    $doctor_id = $_POST['doctor_id'];
+
+
+
+    // Generate token
+
+    $token_result = mysqli_query($conn,
+
+    "SELECT MAX(token_number) AS last_token 
+    FROM queue");
+
+
+    $token_data = mysqli_fetch_assoc($token_result);
+
+
+    $token = $token_data['last_token'] + 1;
+
+
+
+    mysqli_query($conn,
+
+
+    "INSERT INTO queue
+
+    (
+        token_number,
+        patient_id,
+        doctor_id,
+        status
+    )
+
+    VALUES
+
+    (
+        '$token',
+        '$patient_id',
+        '$doctor_id',
+        'Waiting'
+    )"
+
+    );
+
+
+
+    header("Location: reciption_queue.php");
+
+    exit();
+
+
 }
 
-$queue = $_SESSION['queue'];
-$currentPatient = $_SESSION['current_patient'] ?? null;
+
+
+
+// NEXT PATIENT
+
+if(isset($_GET['next'])){
+
+
+    $queue_id=$_GET['next'];
+
+
+
+    mysqli_query($conn,
+
+
+    "UPDATE queue
+
+    SET status='In Consultation'
+
+    WHERE queue_id='$queue_id'"
+
+    );
+
+
+
+    header("Location: reciption_queue.php");
+
+    exit();
+
+
+}
+
+
+
 ?>
 
+
+
 <!DOCTYPE html>
-<html lang="en">
+
+<html>
 
 <head>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Waiting Queue</title>
+<title>Queue</title>
 
-    <style>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
+<style>
 
-        body {
-            background: #f5f9ff;
-            color: #172b4d;
-        }
 
-        .sidebar {
-            width: 220px;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            background: #1f426b;
-            padding-top: 25px;
-        }
+*{
 
-        .logo {
-            color: white;
-            font-size: 20px;
-            font-weight: bold;
-            padding: 0 20px 35px;
-        }
+margin:0;
 
-        .menu a {
-            display: block;
-            color: white;
-            text-decoration: none;
-            padding: 14px 20px;
-            font-size: 14px;
-        }
+padding:0;
 
-        .menu a:hover {
-            background: #1556b0;
-        }
+box-sizing:border-box;
 
-        .menu a.active {
-            background: #0b5ed7;
-            border-left: 4px solid white;
-        }
+font-family:Arial,sans-serif;
 
-        .main {
-            margin-left: 220px;
-        }
+}
 
-        .topbar {
-            height: 65px;
-            background: white;
-            border-bottom: 1px solid #dbe3ec;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding: 0 30px;
-        }
 
-        .profile-link {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            color: #172b4d;
-        }
 
-        .profile-photo {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #1f426b;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
+body{
 
-        .profile-name {
-            display: flex;
-            flex-direction: column;
-        }
+background:#f5f9ff;
 
-        .profile-name strong {
-            font-size: 13px;
-        }
+color:#1e293b;
 
-        .profile-name span {
-            font-size: 11px;
-            color: #666;
-        }
+}
 
-        .content {
-            padding: 30px;
-        }
 
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 25px;
-        }
 
-        .page-header h1 {
-            font-size: 25px;
-            color: #1f426b;
-        }
+.sidebar{
 
-        .page-header p {
-            margin-top: 6px;
-            color: #64748b;
-            font-size: 14px;
-        }
+width:220px;
 
-        .next-area {
-            text-align: center;
-        }
+height:100vh;
 
-        .next-button {
-            background: #1f426b;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-        }
+position:fixed;
 
-        .next-button:hover {
-            background: #1556b0;
-        }
+background:#1f426b;
 
-        .waiting-count {
-            margin-top: 7px;
-            font-size: 12px;
-            color: #64748b;
-        }
+padding-top:25px;
 
-        .current-patient {
-            background: white;
-            border: 1px solid #dbeafe;
-            border-left: 4px solid #1f426b;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 6px;
-        }
+}
 
-        .queue-box {
-            background: white;
-            border: 1px solid #dbeafe;
-            border-radius: 10px;
-            overflow: hidden;
-        }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
 
-        th {
-            background: #1f426b;
-            color: white;
-            text-align: left;
-            padding: 15px;
-            font-size: 13px;
-        }
+.logo{
 
-        td {
-            padding: 15px;
-            border-bottom: 1px solid #edf2f7;
-            font-size: 13px;
-        }
+color:white;
 
-        tr:last-child td {
-            border-bottom: none;
-        }
+font-size:20px;
 
-        tr:hover {
-            background: #f8fbff;
-        }
+font-weight:bold;
 
-        .token, .status {
-            color: #1f426b;
-            font-weight: bold;
-        }
+padding:0 20px 25px;
 
-        .empty {
-            text-align: center;
-            color: #64748b;
-        }
+}
 
-    </style>
+
+
+.menu a{
+
+display:block;
+
+color:white;
+
+text-decoration:none;
+
+padding:14px 20px;
+
+}
+
+
+
+.menu a:hover,
+.menu .active{
+
+background:#2f80c9;
+
+}
+
+
+
+.main{
+
+margin-left:220px;
+
+}
+
+
+
+.topbar{
+
+height:65px;
+
+background:white;
+
+display:flex;
+
+justify-content:flex-end;
+
+align-items:center;
+
+padding:0 30px;
+
+}
+
+
+
+.profile{
+
+color:#1f426b;
+
+text-decoration:none;
+
+font-weight:bold;
+
+}
+
+
+
+.content{
+
+padding:30px;
+
+}
+
+
+
+h1{
+
+color:#1f426b;
+
+margin-bottom:5px;
+
+}
+
+
+
+p{
+
+color:#64748b;
+
+margin-bottom:25px;
+
+}
+
+
+
+.box,
+.table-box{
+
+background:white;
+
+border:1px solid #dbeafe;
+
+border-radius:8px;
+
+padding:22px;
+
+margin-bottom:25px;
+
+}
+
+
+
+.form-group{
+
+margin-bottom:15px;
+
+}
+
+
+
+label{
+
+display:block;
+
+font-size:14px;
+
+margin-bottom:6px;
+
+}
+
+
+
+input,
+select{
+
+width:100%;
+
+padding:10px;
+
+border:1px solid #cbd5e1;
+
+border-radius:5px;
+
+}
+
+
+
+button{
+
+background:#1f426b;
+
+color:white;
+
+border:none;
+
+padding:10px 20px;
+
+border-radius:5px;
+
+cursor:pointer;
+
+}
+
+
+
+button:hover{
+
+background:#2c5d91;
+
+}
+
+
+
+table{
+
+width:100%;
+
+border-collapse:collapse;
+
+}
+
+
+
+th{
+
+background:#1f426b;
+
+color:white;
+
+padding:13px;
+
+text-align:left;
+
+}
+
+
+
+td{
+
+padding:13px;
+
+border-bottom:1px solid #eee;
+
+}
+
+
+
+.action{
+
+background:#2878c8;
+
+color:white;
+
+padding:7px 12px;
+
+text-decoration:none;
+
+border-radius:5px;
+
+font-size:13px;
+
+}
+
+
+</style>
+
 
 </head>
 
+
 <body>
 
-    <div class="sidebar">
-
-        <div class="logo">Medicare </div>
-
-        <div class="menu">
-
-            <a href="dashboard_reciption.php"> Dashboard </a>
-            <a href="reciption_appointments.php"> Appointments </a>
-            <a href="reciption_patients.php"> Patients </a>
-            <a href="billing.php"> Billing </a>
-            <a href="reciption_queue.php" class="active">  Queue </a>
-            <a href="logout">   Logout </a>
-
-        </div>
-
-    </div>
 
 
-    <div class="main">
-
-        <div class="topbar">
-
-            <a href="reciption_profile.php" class="profile-link">
-
-                <div class="profile-photo"> N </div>
-                <div class="profile-name">
-                    <strong>Nusrat Jahan</strong>
-                    <span> Receptionist</span>
-                </div>
-
-            </a>
-        </div>
+<div class="sidebar">
 
 
-        <div class="content">
+<div class="logo">
 
-            <div class="page-header">
+Medicare
 
-                <div>
-                    <h1> Waiting Queue</h1>
-                    <p> Manage patients currently waiting for consultation. </p>
-                </div>
+</div>
 
 
-                <div class="next-area">
-                    <form action="next_patient.php" method="post">
-                        <button type="submit" class="next-button">  Next Patient</button>
-                    </form>
-
-                    <div class="waiting-count">
-                        <?php echo count($queue); ?> Patients Waiting
-                    </div>
-                </div>
-            </div>
+<div class="menu">
 
 
-            <?php if ($currentPatient) { ?>
+<a href="dashboard_reciption.php">
 
-                <div class="current-patient">
+Dashboard
 
-                    <strong>Current Patient: </strong>
-
-                    Token <?php echo $currentPatient[0]; ?> -
-                    <?php echo $currentPatient[1]; ?>  |
-                    <?php echo $currentPatient[2]; ?>
-
-                </div>
-
-            <?php } ?>
+</a>
 
 
-            <div class="queue-box">
-                <table>
+<a href="reciption_appointments.php">
 
-                    <tr>
-                        <th>Token</th>
-                        <th>Patient</th>
-                        <th>Doctor</th>
-                        <th>Waiting Time</th>
-                        <th>Status</th>
-                    </tr>
+Appointments
 
-                    <?php if (!empty($queue)) { ?>
+</a>
 
-                        <?php foreach ($queue as $patient) { ?>
 
-                            <tr>
-                                <td class="token">  <?php echo $patient[0]; ?> </td>
-                                <td> <?php echo $patient[1]; ?> </td>
-                                <td> <?php echo $patient[2]; ?> </td>
-                                <td> <?php echo $patient[3]; ?> </td>
+<a href="reciption_patients.php">
 
-                                <td class="status"> <?php echo $patient[4]; ?> </td>
-                            </tr>
+Patients
 
-                        <?php } ?>
+</a>
 
-                    <?php } else { 
-                        ?>
 
-                        <tr>
-                            <td colspan="5" class="empty"> No patients waiting. </td>
-                        </tr>
+<a href="billing.php">
 
-                    <?php } ?>
-                </table>
+Billing
 
-            </div>
+</a>
 
-        </div>
 
-    </div>
+<a href="reciption_queue.php" class="active">
+
+Queue
+
+</a>
+
+
+<a href="logout">
+
+Logout
+
+</a>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="main">
+
+
+<div class="topbar">
+
+
+<a href="reciption_profile.php" class="profile">
+
+Nusrat Jahan | Receptionist
+
+</a>
+
+
+</div>
+<div class="content">
+
+
+<h1>
+Queue Management
+</h1>
+
+
+<p>
+Manage patient waiting queue.
+</p>
+
+
+
+
+
+<!-- ================= -->
+<!-- ADD QUEUE -->
+<!-- ================= -->
+
+
+<div class="box">
+
+
+<h2>
+Add Patient To Queue
+</h2>
+
+
+<br>
+
+
+<form method="post">
+
+
+
+<div class="form-group">
+
+
+<label>
+Patient
+</label>
+
+
+
+<select name="patient_id" required>
+
+
+<option>
+Select Patient
+</option>
+
+
+
+
+<?php
+
+
+$patients=mysqli_query($conn,
+
+
+"SELECT patient_id,name
+
+FROM patients
+
+ORDER BY name ASC"
+
+);
+
+
+
+while($p=mysqli_fetch_assoc($patients)){
+
+
+?>
+
+
+<option value="<?php echo $p['patient_id']; ?>">
+
+
+<?php echo $p['name']; ?>
+
+
+</option>
+
+
+<?php
+
+}
+
+?>
+
+
+</select>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="form-group">
+
+
+<label>
+Doctor
+</label>
+
+
+
+<select name="doctor_id" required>
+
+
+
+<option>
+Select Doctor
+</option>
+
+
+
+
+
+<?php
+
+
+$doctors=mysqli_query($conn,
+
+
+"SELECT 
+
+doctors.doctor_id,
+
+users.name
+
+
+FROM doctors
+
+
+JOIN users
+
+
+ON doctors.user_id = users.id
+
+
+ORDER BY users.name ASC"
+
+);
+
+
+
+
+
+while($d=mysqli_fetch_assoc($doctors)){
+
+
+?>
+
+
+<option value="<?php echo $d['doctor_id']; ?>">
+
+
+<?php echo $d['name']; ?>
+
+
+</option>
+
+
+<?php
+
+}
+
+?>
+
+
+
+</select>
+
+
+
+</div>
+
+
+
+
+
+
+
+<button name="add_queue">
+
+Add To Queue
+
+</button>
+
+
+
+</form>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ================= -->
+<!-- QUEUE LIST -->
+<!-- ================= -->
+
+
+
+<div class="table-box">
+
+
+<h2>
+
+Current Queue
+
+</h2>
+
+
+<br>
+
+
+
+<table>
+
+
+<tr>
+
+<th>
+Token
+</th>
+
+
+<th>
+Patient
+</th>
+
+
+<th>
+Doctor
+</th>
+
+
+<th>
+Status
+</th>
+
+
+<th>
+Check In Time
+</th>
+
+
+<th>
+Action
+</th>
+
+
+</tr>
+
+
+
+
+
+<?php
+
+
+
+$result=mysqli_query($conn,
+
+
+"SELECT
+
+
+queue.*,
+
+
+patients.name AS patient_name,
+
+
+users.name AS doctor_name
+
+
+
+FROM queue
+
+
+
+
+LEFT JOIN patients
+
+ON queue.patient_id = patients.patient_id
+
+
+
+
+LEFT JOIN doctors
+
+ON queue.doctor_id = doctors.doctor_id
+
+
+
+
+LEFT JOIN users
+
+ON doctors.user_id = users.id
+
+
+
+
+ORDER BY queue.queue_id ASC"
+
+);
+
+
+
+
+
+while($row=mysqli_fetch_assoc($result)){
+
+
+?>
+
+
+
+<tr>
+
+
+
+<td>
+
+<?php echo $row['token_number']; ?>
+
+</td>
+
+
+
+
+
+<td>
+
+<?php echo $row['patient_name']; ?>
+
+</td>
+
+
+
+
+
+<td>
+
+<?php echo $row['doctor_name']; ?>
+
+</td>
+
+
+
+
+
+<td>
+
+<?php echo $row['status']; ?>
+
+</td>
+
+
+
+
+
+<td>
+
+<?php echo $row['check_in_time']; ?>
+
+</td>
+
+
+
+
+
+<td>
+
+
+<?php if($row['status']=="Waiting"){ ?>
+
+
+<a class="action"
+
+href="reciption_queue.php?next=<?php echo $row['queue_id']; ?>">
+
+Next Patient
+
+</a>
+
+
+<?php } else { ?>
+
+
+Completed
+
+
+<?php } ?>
+
+
+
+</td>
+
+
+
+</tr>
+
+
+
+<?php
+
+}
+
+?>
+
+
+
+
+</table>
+
+
+
+</div>
+
+</div>
+<!-- content end -->
+
+
+</div>
+<!-- main end -->
+
+
 
 </body>
 
