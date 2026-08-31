@@ -108,7 +108,7 @@ if (
 }
 
 
-// Status options
+// Status option
 $status_options = array(
     "Pending",
     "Waiting",
@@ -702,7 +702,7 @@ if ($selected_patient != "") {
             </div>
 
 
-            <!-- Patient history -->
+            <!-- Patients history -->
 
             <h2>
                 Patient Flow History
