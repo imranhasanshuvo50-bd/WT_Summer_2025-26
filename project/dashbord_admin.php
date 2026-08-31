@@ -2,6 +2,8 @@
 session_start();
 ?>
 
+
+
 <!DOCTYPE html>
 <html>
 
@@ -19,13 +21,19 @@ session_start();
             <label>User Account Management</label>
         </div>
         <a href="userAccountManagement.php">
-            <button class="normalBtn">User Account Management</button>
+            <button class="BTN">User Account Management</button>
         </a>
-        <a href="doctorDepartment.php">
-            <button class="normalBtn">Doctor & Department Management</button>
+        <a href="departmentManagement.php">
+            <button class="BTN">Department Management</button>
+        </a>
+        <a href="doctorManagement.php">
+            <button class="BTN">Doctor Management</button>
         </a>
         <a href="clinicReports.php">
-            <button class="normalBtn">Clinic Monitoring & Reports</button>
+            <button class="BTN">Clinic Monitoring & Reports</button>
+        </a>
+        <a href="myProfile.php">
+            <button class="BTN">My Profile</button>
         </a>
         <a href="logout.php">
             <button id="logoutBtn">Logout</button>
@@ -67,7 +75,7 @@ session_start();
             margin-bottom: 30px;
         }
 
-        .normalBtn {
+        .BTN {
             width: 300px;
             padding: 12px 20px;
             margin: 8px;
@@ -79,7 +87,7 @@ session_start();
             cursor: pointer;
         }
 
-        .normalBtn:hover {
+        .BTN:hover {
             background-color: #0056b3;
         }
 

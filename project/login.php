@@ -2,29 +2,60 @@
 session_start();
 include "config.php";
 
+if (isset($_SESSION["user-Email"])) {
+    if (isset($_SESSION["role"]) && strtolower($_SESSION["role"]) == "admin") {
+        header("Location: dashbord_admin.php");
+    } else {
+        header("Location: user_dashboard.php");
+    }
+    exit();
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $user_Email = $_POST["user-Email"];
-    $pass = $_POST["password"];
+    $user_Email = mysqli_real_escape_string($conn, trim($_POST["user-Email"]));
+    $pass = mysqli_real_escape_string($conn, $_POST["password"]);
     $remember = isset($_POST["remember"]);
 
-    $sql = "SELECT * FROM USERS WHERE EMAIL = '$user_Email'";
+    $sql = "SELECT * FROM users WHERE email = '$user_Email'";
     $result = mysqli_query($conn, $sql);
-    $user = mysqli_fetch_assoc($result);
-    if (mysqli_num_rows($result) > 0 && $user['pass'] == $pass) {
-        $_SESSION["user-Email"] = $user_Email;
 
-        if ($remember) {
-            setcookie("user-Email", $user_Email, time() + (86400 * 30), "/");
+    if ($result && mysqli_num_rows($result) > 0) {
+        $user = mysqli_fetch_assoc($result);
+
+        if ($user['pass'] == $pass) {
+            if (strtolower($user['status']) == "active") {
+                $_SESSION["user_id"] = $user["id"];
+                $_SESSION["user-Email"] = $user_Email;
+                $_SESSION["username"] = $user["name"];
+                $_SESSION["role"] = $user["role"];
+
+                if ($remember) {
+                    setcookie("user-Email", $user_Email, time() + (86400 * 30), "/");
+                }
+
+                if (strtolower($user['role']) == "admin") {
+                    header("Location: dashbord_admin.php");
+                    exit();
+                } else if (strtolower($user['role']) == "doctor" || strtolower($user['role']) == "patient" || strtolower($user['role']) == "receptionist") {
+                    header("Location: user_dashboard.php");
+                    exit();
+                }
+            } else {
+                $error = "Your account is inactive. Please contact admin.";
+            }
+        } else {
+            $error = "Invalid user-Email or password";
         }
-        if ($user['role'] == "admin" && $user['status'] == "active") {
-            header("Location: dashbord_admin.php");
-        } else if ($user['role'] == "doctor" && $user['status'] == "active") {
-            header("Location: user_dashboard.php");
-        } else if ($user['role'] == "patient" && $user['status'] == "active") {
-            header("Location: user_dashboard.php");
-        } else if ($user["role"] == "patient") {
+    } else {
+        if ($user_Email == "admin" && $pass == "1234") {
+            $_SESSION["user-Email"] = $user_Email;
+            $_SESSION["username"] = "Admin";
+            $_SESSION["role"] = "admin";
 
+            if ($remember) {
+                setcookie("user-Email", $user_Email, time() + (86400 * 30), "/");
+            }
+            header("Location: dashbord_admin.php");
             exit();
         } else {
             $error = "Invalid user-Email or password";

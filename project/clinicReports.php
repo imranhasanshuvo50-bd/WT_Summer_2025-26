@@ -1,232 +1,264 @@
 <?php
 include "config.php";
 
-if (isset($_POST["delete_user"])) {
-    $id = $_POST["id"];
-    $sql = "DELETE FROM users WHERE id='$id'";
+$totalPatients = 0;
+$activePatients = 0;
+$inactivePatients = 0;
 
-    if (mysqli_query($conn, $sql)) {
-        header("Location: userAccountManagement.php");
-        exit();
-    } else {
-        die("Delete failed: " . mysqli_error($conn));
-    }
+$result = mysqli_query($conn, "SELECT COUNT(*) AS total FROM users WHERE role='patient'");
+if ($result) {
+    $row = mysqli_fetch_assoc($result);
+    $totalPatients = $row['total'];
 }
 
-if (isset($_POST["add_user"])) {
-    $name = $_POST["name"];
-    $email = $_POST["email"];
-    $pass = $_POST["password"];
-    $role = $_POST["role"];
-    $status = $_POST["status"];
-
-    $check_email = mysqli_query($conn, "SELECT * FROM users WHERE email='$email'");
-    if (mysqli_num_rows($check_email) > 0) {
-        die("Email already exists!");
-    }
-
-    $sql = "INSERT INTO users (name, email, pass, role, status)
-            VALUES ('$name', '$email', '$pass', '$role', '$status')";
-
-    if (mysqli_query($conn, $sql)) {
-        header("Location: userAccountManagement.php");
-        exit();
-    } else {
-        die("Insert failed: " . mysqli_error($conn));
-    }
+$result = mysqli_query($conn, "SELECT COUNT(*) AS total FROM users WHERE role='patient' AND status='Active'");
+if ($result) {
+    $row = mysqli_fetch_assoc($result);
+    $activePatients = $row['total'];
 }
 
-if (isset($_POST["edit_user"])) {
-    $id = $_POST["id"];
-    $name = $_POST["name"];
-    $email = $_POST["email"];
-    $role = $_POST["role"];
-    $status = $_POST["status"];
+$inactivePatients = $totalPatients - $activePatients;
 
-    $sql = "UPDATE users SET name='$name', email='$email', role='$role', status='$status' WHERE id='$id'";
+$totalRatings = 0;
+$highestRating = 0;
+$lowestRating = 0;
+$averageRating = 0;
 
-    if (mysqli_query($conn, $sql)) {
-        header("Location: userAccountManagement.php");
-        exit();
-    } else {
-        die("Update failed: " . mysqli_error($conn));
-    }
+$result = mysqli_query($conn, "
+    SELECT 
+        COUNT(*) AS total,
+        MAX(rating) AS highest,
+        MIN(rating) AS lowest,
+        AVG(rating) AS average
+    FROM ratings
+");
+
+if ($result) {
+    $row = mysqli_fetch_assoc($result);
+
+    $totalRatings = $row['total'];
+    $highestRating = $row['highest'];
+    $lowestRating = $row['lowest'];
+    $averageRating = $row['average'];
 }
 
-$searchValue = trim($_GET["search"] ?? "");
-$editUser = null;
+$totalAppointments = 0;
+$completedAppointments = 0;
+$pendingAppointments = 0;
+$cancelledAppointments = 0;
 
-if (isset($_GET["edit"])) {
-    $editId = $_GET["edit"];
-    $editResult = mysqli_query($conn, "SELECT * FROM users WHERE id='$editId'");
-    $editUser = mysqli_fetch_assoc($editResult);
+$result = mysqli_query($conn, "SELECT COUNT(*) AS total FROM appointments");
+if ($result) {
+    $row = mysqli_fetch_assoc($result);
+    $totalAppointments = $row['total'];
 }
 
-$sql = "SELECT * FROM users";
-
-if ($searchValue !== "") {
-    $sql .= " WHERE id LIKE '%$searchValue%'
-              OR name LIKE '%$searchValue%'
-              OR email LIKE '%$searchValue%'";
+$result = mysqli_query($conn, "
+    SELECT COUNT(*) AS total 
+    FROM appointments 
+    WHERE status='Completed'
+");
+if ($result) {
+    $row = mysqli_fetch_assoc($result);
+    $completedAppointments = $row['total'];
 }
 
-$result = mysqli_query($conn, $sql);
+$result = mysqli_query($conn, "
+    SELECT COUNT(*) AS total 
+    FROM appointments 
+    WHERE status='Pending'
+");
+if ($result) {
+    $row = mysqli_fetch_assoc($result);
+    $pendingAppointments = $row['total'];
+}
 
-if (!$result) {
-    die("Query failed: " . mysqli_error($conn));
+$result = mysqli_query($conn, "
+    SELECT COUNT(*) AS total 
+    FROM appointments 
+    WHERE status='Cancelled'
+");
+if ($result) {
+    $row = mysqli_fetch_assoc($result);
+    $cancelledAppointments = $row['total'];
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title> User Account Management</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinic Reports</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background-color: #cfedfa;
+        }
+
+        .container {
+            width: 800px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .report-box {
+            background: white;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 2px solid #aeadad;
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #1714af;
+            padding: 10px;
+            background-color: #d0d0d0;
+        }
+
+        th {
+            background-color: #1714af;
+            color: white;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 15px;
+            background: #1714af;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #0e0b7a;
+        }
+    </style>
 </head>
 
-
 <body>
-    <a href="departmentManagement.php"><button type="button">Department Management</button></a>
-    <a href="doctorManagement.php"><button type="button">Doctor Management</button></a>
 
-    <h2>Search Account</h2>
-    <form method="GET">
-        <input type="text" name="search" placeholder="Search by ID, name or email" value="<?php echo $searchValue; ?>">
-        <button type="submit">Search</button>
-        <a href="userAccountManagement.php">Clear</a>
-    </form>
+<div class="container">
 
-    <h2>User Accounts List</h2>
-    <table style="border-collapse: collapse; width: 100%; text-align: left; border: 1px solid #1714af;">
-        <tr>
-            <td>
-                <table style="border-collapse: collapse; width: 100%; text-align: left; border: 5px solid #1714af;">
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
+    <a href="dashbord_admin.php" class="back-btn">Back to Dashboard</a>
 
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
+    <h1>Clinic Monitoring & Reports</h1>
 
-                    <?php
-                    if (mysqli_num_rows($result) > 0) {
+    <div class="report-box">
 
-                        for ($i = 0; $i < mysqli_num_rows($result); $i++) {
-                            $row = mysqli_fetch_assoc($result);
-                            ?>
+        <h2>Patient Statistics</h2>
 
-                            <tr>
-                                <td><?php echo $row["id"]; ?></td>
-                                <td><?php echo $row["name"]; ?></td>
-                                <td><?php echo $row["email"]; ?></td>
-
-                                <td><?php echo $row["role"]; ?></td>
-                                <td><?php echo $row["status"]; ?></td>
-                                <td>
-                                    <form method="GET">
-                                        <button type="submit" name="edit" value="<?php echo $row["id"]; ?>">Edit</button>
-                                    </form>
-                                    <form method="POST" onsubmit="return confirm('Are you sure you want to delete?');">
-                                        <input type="hidden" name="id" value="<?php echo $row["id"]; ?>">
-                                        <button type="submit" name="delete_user">Delete</button>
-                                    </form>
-                                </td>
-                            </tr>
-
-                            <?php
-                        }
-
-                    } else {
-                        echo "<tr><td colspan='6'>No User Accounts found</td></tr>";
-                    }
-                    ?>
-
-
-
-            </td>
-
-    </table>
-    </td>
-    <td>
         <table>
             <tr>
-                <td>
-                    <form method="POST">
-                        <input type="text" name="name" placeholder="Name" required><br>
-                        <input type="email" name="email" placeholder="Email" required><br>
-                        <input type="password" name="password" placeholder="Password" required><br>
-                        <select name="role" required>
-                            <option value="">Select Role</option>
-                            <option value="admin">Admin</option>
-                            <option value="patient">Patient</option>
-                            <option value="doctor">Doctor</option>
-                            <option value="receptionist">Receptionist</option>
-                        </select><br>
-                        <select name="status" required>
-                            <option value="">Select Status</option>
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                        </select><br>
-                        <button type="submit" name="add_user">Add New</button>
-                    </form><br><br>
+                <th>Metric</th>
+                <th>Value</th>
+            </tr>
 
-                    <h2>Edit User Details</h2>
-                    <form method="POST">
-                        <input type="hidden" name="id" value="<?php echo $editUser["id"]; ?>"><br>
-                        <input type="text" name="name" value="<?php echo $editUser["name"]; ?>" required><br>
-                        <input type="email" name="email" value="<?php echo $editUser["email"]; ?>" required><br>
-                        <select name="role" required>
-                            <option value="admin" <?php if ($editUser["role"] == "admin")
-                                echo "selected"; ?>>Admin
-                            </option>
-                            <option value="patient" <?php if ($editUser["role"] == "patient")
-                                echo "selected"; ?>>Patient
-                            </option>
-                            <option value="doctor" <?php if ($editUser["role"] == "doctor")
-                                echo "selected"; ?>>Doctor
-                            </option>
-                            <option value="receptionist" <?php if ($editUser["role"] == "receptionist")
-                                echo "selected"; ?>>Receptionist</option>
-                        </select><br>
-                        <select name="status" required>
-                            <option value="Active" <?php if ($editUser["status"] == "Active")
-                                echo "selected"; ?>>Active
-                            </option>
-                            <option value="Inactive" <?php if ($editUser["status"] == "Inactive")
-                                echo "selected"; ?>>
-                                Inactive</option>
-                        </select><br>
-                        <button type="submit" name="edit_user">Save Changes</button>
-                    </form>
+            <tr>
+                <td>Total Patients</td>
+                <td><?php echo $totalPatients; ?></td>
+            </tr>
 
-                    <button><a href="userAccountManagement.php">Clear</a></button>
-                </td>
+            <tr>
+                <td>Active Patients</td>
+                <td><?php echo $activePatients; ?></td>
+            </tr>
+
+            <tr>
+                <td>Inactive Patients</td>
+                <td><?php echo $inactivePatients; ?></td>
             </tr>
         </table>
 
+    </div>
 
+    <div class="report-box">
+
+        <h2>Rating Statistics</h2>
+
+        <table>
+            <tr>
+                <th>Metric</th>
+                <th>Value</th>
+            </tr>
+
+            <tr>
+                <td>Total Number of Ratings</td>
+                <td><?php echo $totalRatings; ?></td>
+            </tr>
+
+            <tr>
+                <td>Highest Rating</td>
+                <td><?php echo number_format($highestRating, 1); ?></td>
+            </tr>
+
+            <tr>
+                <td>Lowest Rating</td>
+                <td><?php echo number_format($lowestRating, 1); ?></td>
+            </tr>
+
+            <tr>
+                <td>Average Rating</td>
+                <td><?php echo number_format($averageRating, 1); ?></td>
+            </tr>
         </table>
 
+    </div>
 
+    <div class="report-box">
 
+        <h2>Appointment Statistics</h2>
 
-        <style>
-            th,
-            td {
+        <table>
+            <tr>
+                <th>Metric</th>
+                <th>Value</th>
+            </tr>
 
-                border: 1px solid #1714af;
-                padding: 8px;
-                background-color: #d0d0d0;
-            }
+            <tr>
+                <td>Total Appointments</td>
+                <td><?php echo $totalAppointments; ?></td>
+            </tr>
 
-            th {
-                background-color: #1714af;
-                color: white;
-            }
-        </style>
+            <tr>
+                <td>Completed Appointments</td>
+                <td><?php echo $completedAppointments; ?></td>
+            </tr>
+
+            <tr>
+                <td>Pending Appointments</td>
+                <td><?php echo $pendingAppointments; ?></td>
+            </tr>
+
+            <tr>
+                <td>Cancelled Appointments</td>
+                <td><?php echo $cancelledAppointments; ?></td>
+            </tr>
+        </table>
+
+    </div>
+
+</div>
+
 </body>
-
 </html>
