@@ -191,7 +191,6 @@ $notifications = array(
         <a href="Doctor_patient_flow.php">Patient Flow</a>
 
         <hr>
-
         <a href="Doctor_profile.php">Profile</a>
 
         <a href="Doctor_change_password.php">Change Password</a>
@@ -287,11 +286,12 @@ $notifications = array(
 
                 <?php
 
-                foreach ($notifications as $note) {
+                foreach ($notifications as $note)
+                    {
 
-                    echo "<li>$note</li>";
+                        echo "<li>$note</li>";
 
-                }
+                    }
 
                 ?>
 
