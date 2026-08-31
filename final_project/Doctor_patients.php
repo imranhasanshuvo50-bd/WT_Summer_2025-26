@@ -1,8 +1,39 @@
+<?php
+
+include "config.php";
+
+$search = "";
+
+if (isset($_GET["search"])) {
+    $search = $_GET["search"];
+}
+
+$sql = "SELECT * FROM users WHERE role = 'patient'";
+
+$result = mysqli_query($connection, $sql);
+
+$selected_patient = null;
+
+if (isset($_GET["view"])) {
+
+    $patient_id = $_GET["view"];
+
+    $sql2 = "SELECT * FROM users WHERE id = $patient_id AND role = 'patient'";
+
+    $result2 = mysqli_query($connection, $sql2);
+
+    $selected_patient = mysqli_fetch_assoc($result2);
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
+
     <title>MediCare | Patients</title>
 
     <style>
@@ -19,8 +50,6 @@
             min-height: 100vh;
             background-color: #f4f6f8;
         }
-
-        /* Sidebar */
 
         .sidebar {
             width: 220px;
@@ -56,8 +85,6 @@
             margin: 15px 20px;
         }
 
-        /* Main content */
-
         .main-content {
             flex: 1;
             padding: 30px;
@@ -68,22 +95,16 @@
             margin-bottom: 20px;
         }
 
-        /* Search */
-
         .search-form {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
         }
 
-        .search-form input,
-        .search-form select {
+        .search-form input {
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
-        }
-
-        .search-form input {
             width: 220px;
         }
 
@@ -95,8 +116,6 @@
             border-radius: 4px;
             cursor: pointer;
         }
-
-        /* Patient table */
 
         table {
             width: 100%;
@@ -124,8 +143,6 @@
             border-radius: 4px;
         }
 
-        /* Patient information */
-
         .patient-panel {
             background-color: white;
             padding: 20px;
@@ -140,10 +157,6 @@
 
         .patient-panel p {
             margin-bottom: 8px;
-        }
-
-        .patient-panel ul {
-            margin: 10px 0 15px 20px;
         }
 
         .consult-btn {
@@ -166,121 +179,43 @@
 
 </head>
 
-
-<?php
-
-$patients = array(
-
-    array(
-        "id" => "P001",
-        "name" => "Rahim Ahmed",
-        "age" => 45,
-        "gender" => "Male",
-        "phone" => "01711111111",
-        "department" => "Medicine",
-        "status" => "Waiting",
-        "history" => array("Diabetes","High blood pressure")
-    ),
-
-    array(
-        "id" => "P002",
-        "name" => "Karim Hasan",
-        "age" => 52,
-        "gender" => "Male",
-        "phone" => "01722222222",
-        "department" => "Cardiology",
-        "status" => "Consultation",
-        "history" => array( "Heart disease","High cholesterol")
-    ),
-
-    array(
-        "id" => "P003",
-        "name" => "Nabila",
-        "age" => 30,
-        "gender" => "Female",
-        "phone" => "01733333333",
-        "department" => "Medicine",
-        "status" => "Admitted",
-        "history" => array("Asthma")
-    )
-
-);
-
-
-    $search = "";
-
-    if (isset($_GET["search"])) 
-    {
-        $search = $_GET["search"];
-    }
-
-
-    $status = "All";
-
-    if (isset($_GET["status"])) 
-    {
-        $status = $_GET["status"];
-    }
-
-
-    $selected_patient = null;
-
-    if (isset($_GET["view"])) {
-
-        foreach ($patients as $patient) {
-
-            if ($patient["id"] == $_GET["view"]) {
-
-                $selected_patient = $patient;
-
-            }
-
-        }
-
-    }
-
-?>
-
-
 <body>
-
-
-    <!-- Sidebar -->
 
     <div class="sidebar">
 
         <h2>MediCare | Doctor</h2>
 
-        <a href="Doctor_dashboard.php"> Dashboard</a>
+        <a href="Doctor_dashboard.php">Dashboard</a>
+
         <a href="Doctor_patients.php" class="active">Patients</a>
-        <a href="Doctor_consultation.php"> Consultation</a>
-        <a href="Doctor_prescriptions.php"> Prescriptions</a>
-        <a href="Doctor_patient_flow.php"> Patient Flow</a>
+
+        <a href="Doctor_consultation.php">Consultation</a>
+
+        <a href="Doctor_prescriptions.php">Prescriptions</a>
+
+        <a href="Doctor_patient_flow.php">Patient Flow</a>
 
         <hr>
 
-        <a href="Doctor_profile.php"> Profile</a>
-        <a href="Doctor_change_password.php"> Change Password </a>
+        <a href="Doctor_profile.php">Profile</a>
+
+        <a href="Doctor_change_password.php">Change Password</a>
 
         <hr>
+
         <a href="Doctor_logout.php">Logout</a>
 
     </div>
-
-
-    <!-- Main content -->
 
     <div class="main-content">
 
         <h1>Patients</h1>
 
-
-        <!-- Search form -->
-
         <form
             class="search-form"
             method="get"
-            action="Doctor_patients.php">
+            action="Doctor_patients.php"
+        >
 
             <input
                 type="text"
@@ -289,132 +224,81 @@ $patients = array(
                 value="<?php echo htmlspecialchars($search); ?>"
             >
 
-
-            <select name="status">
-
-                <option value="All">  All</option>
-
-                <option value="Waiting"
-                    <?php
-                    if ($status == "Waiting") {
-                        echo "selected";
-                    }
-                    ?>>Waiting
-                </option>
-
-                <option value="Consultation"
-                    <?php
-                    if ($status == "Consultation") {
-                        echo "selected";
-                    }
-                    ?>>Consultation </option>
-
-                <option value="Admitted"
-                    <?php
-                    if ($status == "Admitted") {
-                        echo "selected";
-                    }
-                    ?>
-                > Admitted</option>
-
-            </select>
-
             <button type="submit">Search</button>
 
         </form>
 
-
-        <!-- Patient table -->
-
         <table>
 
             <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Age</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
 
+                <th>ID</th>
+
+                <th>Name</th>
+
+                <th>Email</th>
+
+                <th>Status</th>
+
+                <th>Action</th>
+
+            </tr>
 
             <?php
 
             $found = false;
 
-            foreach ($patients as $patient) {
-
-                $name = strtolower($patient["name"]);
-                $id = strtolower($patient["id"]);
-                $search_text = strtolower($search);
-
-                $search_match = false;
-                $status_match = false;
-
+            while ($patient = mysqli_fetch_assoc($result)) {
 
                 if (
-                    $search_text == "" ||
-                    strpos($name, $search_text) !== false ||
-                    strpos($id, $search_text) !== false
+                    $search == "" ||
+                    strpos(strtolower($patient["name"]), strtolower($search)) !== false ||
+                    strpos($patient["id"], $search) !== false
                 ) {
 
-                    $search_match = true;
+                    $found = true;
+
+            ?>
+
+                    <tr>
+
+                        <td>
+                            <?php echo $patient["id"]; ?>
+                        </td>
+
+                        <td>
+                            <?php echo $patient["name"]; ?>
+                        </td>
+
+                        <td>
+                            <?php echo $patient["email"]; ?>
+                        </td>
+
+                        <td>
+                            <?php echo $patient["status"]; ?>
+                        </td>
+
+                        <td>
+
+                            <a
+                                class="view-btn"
+                                href="Doctor_patients.php?view=<?php echo $patient["id"]; ?>"
+                            >
+                                View
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+            <?php
 
                 }
-
-
-                if (
-                    $status == "All" ||$patient["status"] == $status
-                ) 
-                {
-
-                    $status_match = true;
-
-                }
-
-
-                if ($search_match && $status_match) 
-                    {
-
-                        $found = true;
-
-                        echo "<tr>";
-
-                        echo "<td>";
-                        echo $patient["id"];
-                        echo "</td>";
-
-                        echo "<td>";
-                        echo $patient["name"];
-                        echo "</td>";
-
-                        echo "<td>";
-                        echo $patient["age"];
-                        echo "</td>";
-
-                        echo "<td>";
-                        echo $patient["status"];
-                        echo "</td>";
-
-                        echo "<td>";
-
-                        echo "<a class='view-btn' href='Doctor_patients.php?view=";
-                        echo $patient["id"];
-                        echo "'>";
-                        echo "View";
-                        echo "</a>";
-
-                        echo "</td>";
-
-                        echo "</tr>";
-
-                }
-
             }
 
             ?>
 
         </table>
-
 
         <?php
 
@@ -428,9 +312,6 @@ $patients = array(
 
         ?>
 
-
-        <!-- Patient information -->
-
         <?php
 
         if ($selected_patient != null) {
@@ -443,82 +324,25 @@ $patients = array(
                     Patient Information
                 </h2>
 
-
                 <p>
                     <strong>Patient ID:</strong>
-
-                    <?php
-                    echo $selected_patient["id"];
-                    ?>
+                    <?php echo $selected_patient["id"]; ?>
                 </p>
-
 
                 <p>
                     <strong>Name:</strong>
-
-                    <?php
-                    echo $selected_patient["name"];
-                    ?>
+                    <?php echo $selected_patient["name"]; ?>
                 </p>
-
 
                 <p>
-                    <strong>Age:</strong>
-
-                    <?php
-                    echo $selected_patient["age"];
-                    ?>
+                    <strong>Email:</strong>
+                    <?php echo $selected_patient["email"]; ?>
                 </p>
-
 
                 <p>
-                    <strong>Gender:</strong>
-
-                    <?php
-                    echo $selected_patient["gender"];
-                    ?>
+                    <strong>Status:</strong>
+                    <?php echo $selected_patient["status"]; ?>
                 </p>
-
-
-                <p>
-                    <strong>Phone:</strong>
-
-                    <?php
-                    echo $selected_patient["phone"];
-                    ?>
-                </p>
-
-
-                <p>
-                    <strong>Department:</strong>
-
-                    <?php
-                    echo $selected_patient["department"];
-                    ?>
-                </p>
-
-
-                <p>
-                    <strong>Previous Medical History:</strong>
-                </p>
-
-
-                <ul>
-
-                    <?php
-
-                    foreach ($selected_patient["history"] as $history) {
-
-                        echo "<li>";
-                        echo $history;
-                        echo "</li>";
-
-                    }
-
-                    ?>
-
-                </ul>
-
 
                 <a
                     class="consult-btn"
@@ -529,13 +353,11 @@ $patients = array(
 
             </div>
 
-
         <?php
 
         }
 
         ?>
-
 
     </div>
 
