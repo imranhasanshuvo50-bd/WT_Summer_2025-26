@@ -1,10 +1,22 @@
 <?php
 
-$stored_password = "doctor123";
+session_start();
+include "config.php";
+
+/* Check if doctor is logged in */
+
+if (!isset($_SESSION["user_id"])) {
+    header("Location: login.php");
+    exit();
+}
+
+$user_id = $_SESSION["user_id"];
 
 $error_message = "";
 $success_message = "";
 
+
+/* Change Password */
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -13,28 +25,75 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $confirm_password = trim($_POST["confirm_password"]);
 
 
+    /* Check empty fields */
+
     if ($current_password == "" || $new_password == "" || $confirm_password == "") {
 
         $error_message = "All fields are required.";
 
-    } elseif ($current_password != $stored_password) {
-
-        $error_message = "Current password is incorrect.";
-
-    } elseif (strlen($new_password) < 6) {
-
-        $error_message = "New password must be at least 6 characters.";
-
-    } elseif ($new_password != $confirm_password) {
-
-        $error_message = "New Password and Confirm Password do not match.";
-
     } else {
 
-        $success_message = "Password changed successfully.";
+        /* Get current password from database */
 
+        $sql = "SELECT pass FROM users WHERE id = $user_id";
+
+        $result = mysqli_query($connection, $sql);
+
+        if (mysqli_num_rows($result) > 0) {
+
+            $user = mysqli_fetch_assoc($result);
+
+            $stored_password = $user["pass"];
+
+
+            /* Check current password */
+
+            if ($current_password != $stored_password) {
+
+                $error_message = "Current password is incorrect.";
+
+            }
+
+            /* Check new password length */
+
+            elseif (strlen($new_password) < 6) {
+
+                $error_message = "New password must be at least 6 characters.";
+
+            }
+
+            /* Check password confirmation */
+
+            elseif ($new_password != $confirm_password) {
+
+                $error_message = "New Password and Confirm Password do not match.";
+
+            }
+
+            /* Update password */
+
+            else {
+
+                $update_sql = "UPDATE users 
+                               SET pass = '$new_password' 
+                               WHERE id = $user_id";
+
+                if (mysqli_query($connection, $update_sql)) {
+
+                    $success_message = "Password changed successfully.";
+
+                } else {
+
+                    $error_message = "Password change failed.";
+
+                }
+            }
+
+        } else {
+
+            $error_message = "User not found.";
+        }
     }
-
 }
 
 ?>
@@ -67,7 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
 
-
+        /* Sidebar */
 
         .sidebar {
             width: 220px;
@@ -109,6 +168,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
 
+        
 
         .main-content {
             flex: 1;
@@ -123,6 +183,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
 
+        /* Messages */
 
         .success {
             background-color: #e3f8e9;
@@ -142,6 +203,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
 
+        /* Form */
 
         .box {
             background-color: white;
@@ -177,6 +239,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             cursor: pointer;
         }
 
+
+        .box button:hover {
+            background-color: #0b3d66;
+        }
+
     </style>
 
 </head>
@@ -191,25 +258,56 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <h2>MediCare | Doctor</h2>
 
-        <a href="Doctor_dashboard.php">Dashboard</a>
-        <a href="Doctor_patients.php">Patients</a>
-        <a href="Doctor_consultation.php">Consultation</a>
-        <a href="Doctor_prescriptions.php">Prescriptions</a>
-        <a href="Doctor_patient_flow.php"> Patient Flow</a>
+
+        <a href="Doctor_dashboard.php">
+            Dashboard
+        </a>
+
+
+        <a href="Doctor_patients.php">
+            Patients
+        </a>
+
+
+        <a href="Doctor_consultation.php">
+            Consultation
+        </a>
+
+
+        <a href="Doctor_prescriptions.php">
+            Prescriptions
+        </a>
+
+
+        <a href="Doctor_patient_flow.php">
+            Patient Flow
+        </a>
+
 
         <hr>
 
-        <a href="Doctor_profile.php">Profile</a>
-        <a href="Doctor_change_password.php" class="active">Change Password</a>
+
+        <a href="Doctor_profile.php">
+            Profile
+        </a>
+
+
+        <a href="Doctor_change_password.php" class="active">
+            Change Password
+        </a>
+
 
         <hr>
 
-        <a href="Doctor_logout.php">Logout</a>
+
+        <a href="Doctor_logout.php">
+            Logout
+        </a>
 
     </div>
 
 
-
+    <!-- Main Content -->
 
     <div class="main-content">
 
@@ -245,19 +343,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 Current Password
             </label>
 
-            <input type="password" id="current_password" name="current_password">
+            <input
+                type="password"
+                id="current_password"
+                name="current_password"
+                required
+            >
 
 
-            <label for="new_password"> New Password </label>
+            <label for="new_password">
+                New Password
+            </label>
 
-            <input ype="password" id="new_password" name="new_password">
+            <input
+                type="password"
+                id="new_password"
+                name="new_password"
+                required
+            >
 
 
-            <label for="confirm_password">Confirm Password</label>
+            <label for="confirm_password">
+                Confirm Password
+            </label>
 
-            <input type="password" id="confirm_password" name="confirm_password" >
+            <input
+                type="password"
+                id="confirm_password"
+                name="confirm_password"
+                required
+            >
 
-            <button type="submit">Change Password</button>
+
+            <button type="submit">
+                Change Password
+            </button>
 
 
         </form>
