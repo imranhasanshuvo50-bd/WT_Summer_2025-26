@@ -1,7 +1,98 @@
+<?php
+
+include "config.php";
+
+$patient_id = "";
+
+if (isset($_GET["patient_id"])) {
+    $patient_id = $_GET["patient_id"];
+}
+
+$doctor_id = 1;
+
+$patient_name = "";
+$patient_age = "";
+$patient_found = false;
+
+if ($patient_id != "") {
+
+    $sql = "SELECT * FROM users WHERE id = '$patient_id' AND role = 'patient'";
+
+    $result = mysqli_query($connection, $sql);
+
+    if ($result && mysqli_num_rows($result) > 0) {
+
+        $patient = mysqli_fetch_assoc($result);
+
+        $patient_name = $patient["name"];
+        $patient_age = "Not available";
+        $patient_found = true;
+    }
+}
+
+$symptoms = "";
+$temperature = "";
+$blood_pressure = "";
+$heart_rate = "";
+$diagnosis = "";
+$history = "";
+
+$success_message = "";
+$error_message = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $symptoms = trim($_POST["symptoms"]);
+    $temperature = trim($_POST["temperature"]);
+    $blood_pressure = trim($_POST["blood_pressure"]);
+    $heart_rate = trim($_POST["heart_rate"]);
+    $diagnosis = trim($_POST["diagnosis"]);
+    $history = trim($_POST["history"]);
+
+    $action = $_POST["action"];
+
+    if ($patient_id == "") {
+
+        $error_message = "No patient selected.";
+
+    } elseif ($symptoms == "" || $diagnosis == "") {
+
+        $error_message = "Please fill in Symptoms and Diagnosis.";
+
+    } else {
+
+        $sql = "INSERT INTO consultations 
+                (doctor_id, patient_id, symptoms, temperature, blood_pressure, heart_rate, diagnosis, medical_history) 
+                VALUES 
+                ('$doctor_id', '$patient_id', '$symptoms', '$temperature', '$blood_pressure', '$heart_rate', '$diagnosis', '$history')";
+
+        $result = mysqli_query($connection, $sql);
+
+        if ($result) {
+
+            if ($action == "save") {
+
+                $success_message = "Consultation saved as draft.";
+
+            } else {
+
+                $success_message = "Consultation completed successfully.";
+            }
+
+        } else {
+
+            $error_message = "Error saving consultation: " . mysqli_error($connection);
+        }
+    }
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
     <title>MediCare | Consultation</title>
 
@@ -19,8 +110,6 @@
             min-height: 100vh;
             background-color: #f4f6f8;
         }
-
-        /* Sidebar */
 
         .sidebar {
             width: 220px;
@@ -56,8 +145,6 @@
             margin: 15px 20px;
         }
 
-        /* Main content */
-
         .main-content {
             flex: 1;
             padding: 30px;
@@ -68,8 +155,6 @@
             color: #0b3d66;
             margin-bottom: 20px;
         }
-
-        /* Messages */
 
         .success {
             background-color: #e3f8e9;
@@ -87,8 +172,6 @@
             border-radius: 4px;
         }
 
-        /* Patient information */
-
         .patient-info {
             background-color: white;
             padding: 20px;
@@ -99,8 +182,6 @@
         .patient-info p {
             margin-bottom: 8px;
         }
-
-        /* Consultation form */
 
         .consult-form {
             background-color: white;
@@ -159,98 +240,37 @@
 
 </head>
 
-
-<?php
-
-$patient_id = "P001";
-$patient_name = "Rahim Ahmed";
-$patient_age = 45;
-
-if (isset($_GET["patient_id"])) 
-    {
-        $patient_id = $_GET["patient_id"];
-    }
-
-
-$symptoms = "";
-$temperature = "";
-$blood_pressure = "";
-$heart_rate = "";
-$diagnosis = "";
-$history = "";
-
-$success_message = "";
-$error_message = "";
-
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-    $symptoms = trim($_POST["symptoms"]);
-    $temperature = trim($_POST["temperature"]);
-    $blood_pressure = trim($_POST["blood_pressure"]);
-    $heart_rate = trim($_POST["heart_rate"]);
-    $diagnosis = trim($_POST["diagnosis"]);
-    $history = trim($_POST["history"]);
-
-
-    if ($symptoms == "" || $diagnosis == "") {
-
-        $error_message = "Please fill in Symptoms and Diagnosis.";
-
-    } else {
-
-        if ($_POST["action"] == "save") {
-
-            $success_message = "Consultation saved as draft.";
-
-        }
-
-        if ($_POST["action"] == "complete") {
-
-            $success_message = "Consultation completed successfully.";
-
-        }
-
-    }
-
-}
-
-?>
-
-
 <body>
-
-
-    <!-- Sidebar -->
 
     <div class="sidebar">
 
         <h2>MediCare | Doctor</h2>
 
-        <a href="Doctor_dashboard.php"> Dashboard</a>
-        <a href="Doctor_patients.php"> Patients</a>
+        <a href="Doctor_dashboard.php">Dashboard</a>
+
+        <a href="Doctor_patients.php">Patients</a>
+
         <a href="Doctor_consultation.php" class="active">Consultation</a>
-        <a href="Doctor_prescriptions.php">Prescriptions </a>
+
+        <a href="Doctor_prescriptions.php">Prescriptions</a>
+
         <a href="Doctor_patient_flow.php">Patient Flow</a>
 
         <hr>
 
-        <a href="Doctor_profile.php"> Profile</a>
-        <a href="Doctor_change_password.php"> Change Password</a>
+        <a href="Doctor_profile.php">Profile</a>
+
+        <a href="Doctor_change_password.php">Change Password</a>
 
         <hr>
 
-        <a href="Doctor_logout.php"> Logout</a>
+        <a href="Doctor_logout.php">Logout</a>
 
     </div>
-
-
-    <!-- Main content -->
 
     <div class="main-content">
 
         <h1>Consultation</h1>
-
 
         <?php if ($success_message != "") { ?>
 
@@ -260,7 +280,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <?php } ?>
 
-
         <?php if ($error_message != "") { ?>
 
             <div class="error">
@@ -269,109 +288,135 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <?php } ?>
 
-
-        <!-- Patient information -->
-
         <div class="patient-info">
 
-            <p>
-                <strong>Patient ID:</strong>
-                <?php echo $patient_id; ?>
-            </p>
+            <?php if ($patient_found == true) { ?>
 
-            <p>
-                <strong>Patient Name:</strong>
-                <?php echo $patient_name; ?>
-            </p>
+                <p>
+                    <strong>Patient ID:</strong>
+                    <?php echo $patient_id; ?>
+                </p>
 
-            <p>
-                <strong>Age:</strong>
-                <?php echo $patient_age; ?>
-            </p>
+                <p>
+                    <strong>Patient Name:</strong>
+                    <?php echo htmlspecialchars($patient_name); ?>
+                </p>
+
+                <p>
+                    <strong>Age:</strong>
+                    <?php echo $patient_age; ?>
+                </p>
+
+            <?php } else { ?>
+
+                <p>
+                    <strong>No patient selected.</strong>
+                </p>
+
+                <p>
+                    Please go to the Patients page and select a patient.
+                </p>
+
+            <?php } ?>
 
         </div>
 
+        <?php if ($patient_found == true) { ?>
 
-        <!-- Consultation form -->
+            <form
+                class="consult-form"
+                method="post"
+                action="Doctor_consultation.php?patient_id=<?php echo $patient_id; ?>"
+            >
 
-        <form
-            class="consult-form"
-            method="post"
-            action="Doctor_consultation.php?patient_id=<?php echo $patient_id; ?>"
-        >
+                <label for="symptoms">
+                    Symptoms
+                </label>
 
+                <textarea
+                    id="symptoms"
+                    name="symptoms"
+                    rows="3"
+                ><?php echo htmlspecialchars($symptoms); ?></textarea>
 
-            <label for="symptoms"> Symptoms</label>
+                <label>
+                    Vitals
+                </label>
 
-            <textarea id="symptoms" name="symptoms" rows="3">
-                <?php echo htmlspecialchars($symptoms); ?>
-            </textarea>
+                <div class="vitals">
 
+                    <input
+                        type="text"
+                        name="temperature"
+                        placeholder="Temperature"
+                        value="<?php echo htmlspecialchars($temperature); ?>"
+                    >
 
-            <label> Vitals</label>
+                    <input
+                        type="text"
+                        name="blood_pressure"
+                        placeholder="Blood Pressure"
+                        value="<?php echo htmlspecialchars($blood_pressure); ?>"
+                    >
 
-            <div class="vitals">
+                    <input
+                        type="text"
+                        name="heart_rate"
+                        placeholder="Heart Rate"
+                        value="<?php echo htmlspecialchars($heart_rate); ?>"
+                    >
 
-                <input type="text" name="temperature" placeholder="Temperature" value="<?php echo htmlspecialchars($temperature); ?>">
+                </div>
 
-                <input
-                    type="text"
-                    name="blood_pressure"
-                    placeholder="Blood Pressure"
-                    value="<?php echo htmlspecialchars($blood_pressure); ?>"
-                >
+                <label for="diagnosis">
+                    Diagnosis
+                </label>
 
-                <input
-                    type="text"
-                    name="heart_rate"
-                    placeholder="Heart Rate"
-                    value="<?php echo htmlspecialchars($heart_rate); ?>"
-                >
+                <textarea
+                    id="diagnosis"
+                    name="diagnosis"
+                    rows="3"
+                ><?php echo htmlspecialchars($diagnosis); ?></textarea>
 
-            </div>
+                <label for="history">
+                    Previous Medical History
+                </label>
 
+                <textarea
+                    id="history"
+                    name="history"
+                    rows="2"
+                ><?php echo htmlspecialchars($history); ?></textarea>
 
-            <label for="diagnosis"> Diagnosis</label>
+                <div class="buttons">
 
-            <textarea id="diagnosis" name="diagnosis" rows="3">
-                <?php echo htmlspecialchars($diagnosis); ?>
-            </textarea>
+                    <button
+                        type="submit"
+                        name="action"
+                        value="save"
+                        class="save"
+                    >
+                        Save Draft
+                    </button>
 
+                    <button
+                        type="submit"
+                        name="action"
+                        value="complete"
+                        class="complete"
+                    >
+                        Complete Consultation
+                    </button>
 
-            <label for="history">
-                Previous Medical History
-            </label>
+                </div>
 
-            <textarea
-                id="history"
-                name="history"
-                rows="2"
-            ><?php echo htmlspecialchars($history); ?></textarea>
+            </form>
 
-
-            <div class="buttons">
-
-                <button
-                    type="submit"
-                    name="action"
-                    value="save"
-                    class="save"
-                >Save Draft</button>
-
-
-                <button
-                    type="submit"
-                    name="action"
-                    value="complete"
-                    class="complete"
-                >Complete Consultation</button>
-
-            </div>
-
-        </form>
+        <?php } ?>
 
     </div>
 
 </body>
 
 </html>
+
