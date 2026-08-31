@@ -1,22 +1,47 @@
 <?php
-$today_appointments = 8;
-$pending_consultations = 3;
-$admitted_patients = 5;
+
+include "config.php";
+
+$sql = "SELECT * FROM appointments";
+
+$result = mysqli_query($connection, $sql);
+
+$today_appointments = 0;
+$pending_consultations = 0;
+$waiting_patients = 0;
+
+while ($row = mysqli_fetch_assoc($result)) {
+
+    $today_appointments++;
+
+    if ($row["status"] == "Pending") {
+        $pending_consultations++;
+    }
+
+    if ($row["status"] == "Waiting") {
+        $waiting_patients++;
+    }
+}
 
 $notifications = array(
     "New appointment assigned",
     "Lab report is ready",
     "Patient consultation pending"
 );
+
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <title>MediCare | Doctor Dashboard</title>
 
     <style>
+
         * {
             margin: 0;
             padding: 0;
@@ -144,73 +169,138 @@ $notifications = array(
         .notifications li {
             margin-bottom: 8px;
         }
+
     </style>
+
 </head>
 
 <body>
 
     <div class="sidebar">
+
         <h2>MediCare | Doctor</h2>
 
         <a href="Doctor_dashboard.php" class="active">Dashboard</a>
+
         <a href="Doctor_patients.php">Patients</a>
+
         <a href="Doctor_consultation.php">Consultation</a>
+
         <a href="Doctor_prescriptions.php">Prescriptions</a>
+
         <a href="Doctor_patient_flow.php">Patient Flow</a>
 
         <hr>
 
         <a href="Doctor_profile.php">Profile</a>
+
         <a href="Doctor_change_password.php">Change Password</a>
 
         <hr>
 
         <a href="logout.php">Logout</a>
+
     </div>
 
+
     <div class="main-content">
+
         <h1>Dashboard</h1>
+
 
         <h2>Summary</h2>
 
+
         <div class="cards">
-            <div class="card">
-                <p class="label">Today's Appointments</p>
-                <p class="number"><?php echo $today_appointments; ?></p>
-            </div>
 
             <div class="card">
-                <p class="label">Pending Consultations</p>
-                <p class="number"><?php echo $pending_consultations; ?></p>
+
+                <p class="label">
+                    Today's Appointments
+                </p>
+
+                <p class="number">
+                    <?php echo $today_appointments; ?>
+                </p>
+
             </div>
 
+
             <div class="card">
-                <p class="label">Admitted Patients</p>
-                <p class="number"><?php echo $admitted_patients; ?></p>
+
+                <p class="label">
+                    Pending Consultations
+                </p>
+
+                <p class="number">
+                    <?php echo $pending_consultations; ?>
+                </p>
+
             </div>
+
+
+            <div class="card">
+
+                <p class="label">
+                    Waiting Patients
+                </p>
+
+                <p class="number">
+                    <?php echo $waiting_patients; ?>
+                </p>
+
+            </div>
+
         </div>
+
 
         <h2>Quick Links</h2>
 
+
         <div class="quick-links">
-            <a href="Doctor_patients.php">View Patients</a>
-            <a href="Doctor_consultation.php">Consultation</a>
-            <a href="Doctor_prescriptions.php">Prescriptions</a>
-            <a href="Doctor_patient_flow.php">Patient Flow</a>
+
+            <a href="Doctor_patients.php">
+                View Patients
+            </a>
+
+            <a href="Doctor_consultation.php">
+                Consultation
+            </a>
+
+            <a href="Doctor_prescriptions.php">
+                Prescriptions
+            </a>
+
+            <a href="Doctor_patient_flow.php">
+                Patient Flow
+            </a>
+
         </div>
+
 
         <h2>Notifications</h2>
 
+
         <div class="notifications">
+
             <ul>
+
                 <?php
+
                 foreach ($notifications as $note) {
+
                     echo "<li>$note</li>";
+
                 }
+
                 ?>
+
             </ul>
+
         </div>
+
     </div>
 
 </body>
+
 </html>
