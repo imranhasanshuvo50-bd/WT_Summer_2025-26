@@ -2,28 +2,38 @@
 session_start();
 ?>
 
+
+
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>User Dashboard</title>
 </head>
+
 <body>
-</div>
+    </div>
     <div class="logoutContainer">
         <div id="welcome">
-    Hello, <?php echo $_SESSION["user-Email"]; ?>
+            Hello, <?php echo $_SESSION["user-Email"]; ?>
         </div>
         <div id="heading">
             <label>User Account Management</label>
         </div>
         <a href="userAccountManagement.php">
-            <button class="normalBtn">User Account Management</button>
+            <button class="BTN">User Account Management</button>
         </a>
-        <a href="doctorDepartment.php">
-            <button class="normalBtn">Doctor & Department Management</button>
+        <a href="departmentManagement.php">
+            <button class="BTN">Department Management</button>
+        </a>
+        <a href="doctorManagement.php">
+            <button class="BTN">Doctor Management</button>
         </a>
         <a href="clinicReports.php">
-            <button class="normalBtn">Clinic Monitoring & Reports</button>
+            <button class="BTN">Clinic Monitoring & Reports</button>
+        </a>
+        <a href="myProfile.php">
+            <button class="BTN">My Profile</button>
         </a>
         <a href="logout.php">
             <button id="logoutBtn">Logout</button>
@@ -36,15 +46,17 @@ session_start();
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             display: flex;
-             justify-content: center;
+            justify-content: center;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
             background-color: #cfedfa;
             font-family: Arial, sans-serif;
         }
+
         .logoutContainer {
             display: flex;
             flex-direction: column;
@@ -56,12 +68,14 @@ session_start();
             justify-content: center;
             align-items: center;
         }
+
         #heading {
             color: #333;
             font-size: 24px;
             margin-bottom: 30px;
         }
-        .normalBtn {
+
+        .BTN {
             width: 300px;
             padding: 12px 20px;
             margin: 8px;
@@ -73,7 +87,7 @@ session_start();
             cursor: pointer;
         }
 
-        .normalBtn:hover {
+        .BTN:hover {
             background-color: #0056b3;
         }
 
@@ -92,13 +106,15 @@ session_start();
         #logoutBtn:hover {
             background-color: #a71d2a;
         }
+
         #welcome {
-    color: #333;
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
+            color: #333;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
     </style>
 
 </body>
+
 </html>

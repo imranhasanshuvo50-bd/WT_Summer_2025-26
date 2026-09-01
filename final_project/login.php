@@ -1,41 +1,55 @@
+```php
 <?php
 session_start();
-if(isset($_SESSION["user-Email"]))
-    {
-        header("Location: dashbord.php");
-        exit();
-    }
+include "config.php";
 
-if($_SERVER["REQUEST_METHOD"]=="POST")
-    {
-        $user_Email=$_POST["user-Email"];
-        $pass=$_POST["password"] ;
-        $remember=isset($_POST["remember"]);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-        if($user_Email=="admin" && $pass=="1234")
-            {
-                $_SESSION["user-Email"]=$user_Email;
+    $user_Email = $_POST["user-Email"];
+    $pass = $_POST["password"];
+    $remember = isset($_POST["remember"]);
 
-                if($remember)
-                {
-                    setcookie("user-Email",$user_Email,time()+(86400*30),"/");
-                }
-                header("Location: dashbord.php");
-                exit();    
+    $sql = "SELECT * FROM USERS WHERE EMAIL = '$user_Email'";
+    $result = mysqli_query($conn, $sql);
+
+    if (mysqli_num_rows($result) > 0) {
+
+        $user = mysqli_fetch_assoc($result);
+
+        if ($user["pass"] == $pass) {
+
+            $_SESSION["user-Email"] = $user_Email;
+
+            if ($remember) {
+                setcookie(
+                    "user-Email",$user_Email,time() + (86400 * 30),"/");
             }
-        else{
-            $error="Invalid user-Email or password";
-        }    
-    }    
+
+            if ($user["role"] == "Admin" && $user["status"] == "Active") {
+                header("Location: dashbord.php");
+                exit();
+            }
+
+        } else {
+            $error = "Invalid user-Email or password";
+        }
+
+    } else {
+        $error = "Invalid user-Email or password";
+    }
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
- 
+
     <title>Login</title>
 
 </head>
+
 <body>
 
     <form method="post" action="" id="login">
@@ -44,16 +58,15 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
             <label id="subheader">Login to your portal</label>
         </div>
 
-        <?php if(isset($error)): ?>
+        <?php if (isset($error)): ?>
             <div class="error-message"><?php echo $error; ?></div>
         <?php endif; ?>
 
-  
+
 
         <div class="form">
             <label for="user-Email">user-Email</label>
-            <input type="text" id="user-Email" name="user-Email" placeholder="Enter user-Email" 
-            required value="">
+            <input type="text" id="user-Email" name="user-Email" placeholder="Enter user-Email" required>
         </div>
 
         <div class="form">
@@ -71,11 +84,11 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
 
         <input type="submit" id="loginBtn" value="Login">
     </form>
-        <script>
+    <script>
         function viewPassword() {
             var passwordInput = document.getElementById("password");
             var showPasswordBtn = document.getElementById("showPasswordBtn");
-            if (passwordInput.type === "password") {
+            if (passwordInput.type == "password") {
                 passwordInput.type = "text";
                 showPasswordBtn.textContent = "Hide";
             } else {
@@ -90,11 +103,11 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            
+
         }
 
         body {
-            background-color :  #e0f2fe;
+            background-color: #e0f2fe;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -109,7 +122,7 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
             max-width: 420px;
             border: 1px solid #cbd5e1;
             border-radius: 12px;
-        
+
         }
 
         .header {
@@ -131,7 +144,7 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
             display: block;
         }
 
-       
+
 
         label {
             font-size: 14px;
@@ -141,7 +154,8 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
             margin-bottom: 6px;
         }
 
-        select, input {
+        select,
+        input {
             width: 100%;
             padding: 12px 14px;
             border: 1px solid #cbd5e1;
@@ -152,7 +166,7 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
             transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        
+
         .passwordSection {
             position: relative;
             display: flex;
@@ -170,7 +184,6 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
             right: 10px;
             background: none;
             border: none;
-            cursor: pointer;
             font-size: 14px;
             color: #64748b;
             padding: 5px;
@@ -186,14 +199,14 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
         .checkbox-wrapper input {
             width: 16px;
             height: 16px;
-            cursor: pointer;
+
         }
 
         .checkbox-wrapper label {
             margin-bottom: 0;
             font-size: 14px;
             font-weight: 400;
-            cursor: pointer;
+
         }
 
         #loginBtn {
@@ -205,7 +218,7 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
             font-size: 16px;
             font-weight: 600;
             border-radius: 8px;
-           
+
         }
 
         #loginBtn:hover {
@@ -224,4 +237,5 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
         }
     </style>
 </body>
+
 </html>
