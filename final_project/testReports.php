@@ -59,7 +59,6 @@ if ($patient_id > 0) {
 
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Test Reports</title>
 </head>
@@ -115,7 +114,7 @@ if ($patient_id > 0) {
 
     <div class="actionGroup">
 
-        <a href="medicalRecordPrescription.php">
+        <a href="medicialrecord&prescription_dashboard.php">
             <button id="backBtn">Back</button>
         </a>
 
