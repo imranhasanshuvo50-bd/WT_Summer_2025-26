@@ -474,11 +474,7 @@ Nusrat Jahan | Receptionist
 
 
 <div class="content">
-
-
-<h1>
-Patients
-</h1>
+<h1>Patients</h1>
 
 
 <p>
