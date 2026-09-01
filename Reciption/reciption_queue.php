@@ -250,7 +250,9 @@ font-size:13px;
             <?php echo $d['name']; ?>
         </option>
         
-        <?php}?>
+        <?php
+        }
+        ?>
     </select>
 </div>
 

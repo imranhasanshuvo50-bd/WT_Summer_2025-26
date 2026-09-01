@@ -343,7 +343,7 @@ font-size:13px;
                     <div>Dr. <?php echo $row['doctor_name']; ?></div>
                     <div><?php echo $row['status']; ?></div>
                 </div>
-                <?php}
+                <?php }
             }
             else{
                 echo "<div style='padding:20px;color:#64748b'>No appointments today</div>";

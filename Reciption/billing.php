@@ -188,10 +188,11 @@ if(isset($_GET['search'])){
                 
                 <select name="doctor_id">
                     <option>Select Doctor</option>
-                    <?php $d=mysqli_query($conn,"SELECT doctors.doctor_id,users.name FROM doctors JOIN usersON doctors.user_id=users.id");
+                    <?php $d=mysqli_query($conn,"SELECT doctors.doctor_id,users.name FROM doctors JOIN users ON doctors.user_id=users.id");
                        while($doc=mysqli_fetch_assoc($d)){
                     ?>
                     
+
                     <option value="<?php echo $doc['doctor_id'];?>">
                         <?php echo $doc['name'];?>
                     </option>

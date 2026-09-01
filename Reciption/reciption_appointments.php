@@ -48,9 +48,8 @@ if(isset($_POST['save_appointment']))
 
 body{
 
-    background:#f5f9ff;
-
-    color:#1e293b;
+    background: #f5f9ff;
+    color: #1e293b;
 
 }
 
@@ -61,7 +60,7 @@ body{
     position:fixed;
     left:0;
     top:0;
-    background:#1f426b;
+    background: #1f426b;
     padding-top:25px;
 
 }
@@ -84,11 +83,11 @@ body{
 }
 
 .menu a:hover{
-    background:#2c5d91;
+    background: #2c5d91;
 }
 
 .menu a.active{
-    background:#2f80c9;
+    background: #2f80c9;
 }
 
 .main{
@@ -110,7 +109,7 @@ body{
 .profile{
 
     text-decoration:none;
-    color:#1f426b;
+    color: #1f426b;
     font-weight:bold;
     font-size:14px;
 
@@ -123,13 +122,13 @@ body{
 
 .page-title h1{
 
-    color:#1f426b;
+    color: #1f426b;
     font-size:25px;
     margin-bottom:5px;
 }
 
 .page-title p{
-    color:#64748b;
+    color: #64748b;
     font-size:14px;
     margin-bottom:25px;
 }
@@ -148,7 +147,7 @@ body{
 
 .page-button{
     min-height:95px;
-    background:#1f426b;
+    background: #1f426b;
     color:white;
     border:none;
     border-radius:8px;
@@ -160,12 +159,9 @@ body{
 
 }
 
-
-
 .page-button:hover{
 
-    background:#2c5d91;
-
+    background: #2c5d91;
 }
 
 .page-button span{
@@ -176,7 +172,7 @@ body{
 
     margin-top:7px;
 
-    color:#dbeafe;
+    color: #dbeafe;
 
 }
 
@@ -198,7 +194,7 @@ body{
 .form-box h2,
 .section-title{
 
-    color:#1f426b;
+    color: #1f426b;
     font-size:19px;
     margin-bottom:18px;
 }
@@ -229,7 +225,7 @@ body{
 }
 
 .submit-button{
-    background:#1f426b;
+    background: #1f426b;
     color:white;
     border:none;
     padding:11px 20px;
@@ -239,7 +235,7 @@ body{
 
 .submit-button:hover{
 
-    background:#2c5d91;
+    background: #2c5d91;
 
 }
 
@@ -258,8 +254,7 @@ table{
 
 
 th{
-
-    background:#1f426b;
+    background: #1f426b;
     color:white;
     text-align:left;
     padding:13px;
@@ -268,7 +263,6 @@ th{
 }
 
 td{
-
     padding:13px;
     border-bottom:1px solid #edf2f7;
     font-size:13px;
@@ -343,7 +337,9 @@ tr:last-child td{
                             <?php echo $p['name']; ?>
                         </option>
                         
-                        <?php}?>
+                        <?php
+                        }
+                        ?>
                     </select>
                 </div>
                 
@@ -352,7 +348,7 @@ tr:last-child td{
                     <select name="doctor_id">
                         <option>Select Doctor</option>
                         <?php
-                        $doctors=mysqli_query($conn,"SELECT doctors.doctor_id,users.name FROM doctorsJOIN users ON doctors.user_id = users.id");
+                        $doctors=mysqli_query($conn,"SELECT doctors.doctor_id,users.name FROM doctors JOIN users ON doctors.user_id = users.id");
                         while($d=mysqli_fetch_assoc($doctors)){
                         ?>
                         
@@ -360,18 +356,20 @@ tr:last-child td{
                             <?php echo $d['name']; ?>
                         </option>
                         
-                        <?php}?>
+                        <?php
+                        }
+                        ?>
                     </select>
                 </div>
                 
                 <div class="form-group">
                     <label>Date</label>
-                    <input type="date"name="appointment_date">
+                    <input type="date" name="appointment_date">
                 </div>
                 
                 <div class="form-group">
                     <label>Time</label>
-                    <input type="time"name="appointment_time">
+                    <input type="time" name="appointment_time">
                 </div>
                 <button class="submit-button" name="save_appointment">Save Appointment</button>
             </form>
@@ -392,8 +390,10 @@ tr:last-child td{
                                                     LEFT JOIN patients ON appointments.patient_id = patients.patient_id
                                                     LEFT JOIN doctors ON appointments.doctor_id = doctors.doctor_id
                                                     LEFT JOIN users ON doctors.user_id = users.id
-                                                    WHERE appointments.appointment_date = CURDATE()ORDER BY appointments.appointment_time ASC");
-                        while($row=mysqli_fetch_assoc($today)){?>
+                                                    WHERE appointments.appointment_date = CURDATE()
+                                                    ORDER BY appointments.appointment_time ASC");
+                        while($row=mysqli_fetch_assoc($today)){
+                    ?>
                         
                         <tr>
                             <td><?php echo $row['appointment_time']; ?></td>
@@ -401,7 +401,9 @@ tr:last-child td{
                             <td><?php echo $row['doctor_name']; ?></td>
                             <td><?php echo $row['status']; ?></td>
                         </tr>
-                        <?php}?>
+                        <?php
+                        }
+                        ?>
                     </table>
                 </div>
             </div>
@@ -434,7 +436,9 @@ tr:last-child td{
                             <td><?php echo $row['doctor_name']; ?></td>
                             <td><?php echo $row['status']; ?></td>
                         </tr>
-                        <?php}?>
+                        <?php
+                        }
+                        ?>
                     
                     </table>
                 </div>
@@ -465,7 +469,9 @@ tr:last-child td{
                                         <td><?php echo $row['status']; ?></td>
                                     </tr>
                                     
-                                <?php}?>
+                                <?php
+                                }
+                                ?>
                             </table>
                         </div>
                     </div>
