@@ -75,12 +75,6 @@ $waiting_queue=mysqli_fetch_assoc($queue)['total'];
 
 
 
-
-
-// Pending Appointment
-
-// (Because bills table not created yet)
-
 $pending=mysqli_query($conn,
 
 "SELECT COUNT(*) AS total
