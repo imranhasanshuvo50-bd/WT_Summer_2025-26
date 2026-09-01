@@ -57,7 +57,7 @@ $user = mysqli_fetch_assoc($result);
 <body>
 
 <div class="profile">
-
+<a href="dashbord_admin.php" class="back-btn">Back to Dashboard</a>
     <h2>My Profile</h2>
 
     <div class="info">
@@ -179,6 +179,16 @@ label {
     font-weight: 600;
     color: #334155;
 }
+.back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 15px;
+            background: #1714af;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
 
 input {
     width: 100%;

@@ -81,9 +81,7 @@ if (!$result) {
 
 
 <body>
-    <a href="departmentManagement.php"><button type="button">Department Management</button></a>
-    <a href="doctorManagement.php"><button type="button">Doctor Management</button></a>
-
+    <a href="dashbord_admin.php" class="back-btn">Back to Dashboard</a>
     <h2>Search Account</h2>
     <form method="GET">
         <input type="text" name="search" placeholder="Search by ID, name or email" value="<?php echo $searchValue; ?>">
@@ -221,6 +219,16 @@ if (!$result) {
                 background-color: #1714af;
                 color: white;
             }
+            .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 15px;
+            background: #1714af;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
         </style>
 </body>
 

@@ -58,6 +58,7 @@ if (!$departmentResult) {
 <html>
 
 <head>
+    <a href="dashbord_admin.php" class="back-btn">Back to Dashboard</a>
     <title>Department Management</title>
     <style>
         body {
@@ -107,6 +108,17 @@ if (!$departmentResult) {
         .form-table {
             width: auto;
         }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 15px;
+            background: #1714af;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
     </style>
 </head>
 

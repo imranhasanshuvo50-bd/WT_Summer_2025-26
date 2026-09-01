@@ -1,4 +1,4 @@
-```php
+
 <?php
 session_start();
 include "config.php";
@@ -18,15 +18,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($user["pass"] == $pass) {
 
-            $_SESSION["user-Email"] = $user_Email;
+            $_SESSION["user-Email"] = $user["email"];
+            $_SESSION["user_id"] = $user["id"];
 
             if ($remember) {
                 setcookie(
                     "user-Email",$user_Email,time() + (86400 * 30),"/");
             }
 
-            if ($user["role"] == "Admin" && $user["status"] == "Active") {
-                header("Location: dashbord.php");
+            if ($user["role"] == "admin" && $user["status"] == "Active") {
+                header("Location: dashbord_admin.php");
                 exit();
             }
 
@@ -82,7 +83,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <label for="remember">Remember me</label>
         </div>
 
-        <input type="submit" id="loginBtn" value="Login">
+        <input type="submit" id="loginBtn" value="Login"><br>
+        <div class="link-section">
+           <br> Don't have an account? <a href="signup.php">Sign up here</a>
+        </div>
     </form>
     <script>
         function viewPassword() {
@@ -106,6 +110,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         }
 
+        .link-section a {
+            color: #0284c7;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .link-section a:hover {
+            color: #0369a1;
+            text-decoration: underline;
+        }
+
         body {
             background-color: #e0f2fe;
             min-height: 100vh;
@@ -123,6 +138,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border: 1px solid #cbd5e1;
             border-radius: 12px;
 
+        }
+        #link {
+           width: 100%;
+            background-color: #0284c7;
+            color: white;
+            border: none;
+            padding: 5px;
+            font-size: 10px;
+            font-weight: 800;
+            border-radius: 8px;
         }
 
         .header {

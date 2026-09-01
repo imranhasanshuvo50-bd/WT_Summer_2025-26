@@ -94,10 +94,21 @@ if (isset($_GET["edit_doctor"])) {
         .form-table {
             width: auto;
         }
+         .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 15px;
+            background: #1714af;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
     </style>
 </head>
 
 <body>
+     <a href="dashbord_admin.php" class="back-btn">Back to Dashboard</a>
     <h1>Doctor Management</h1>
     <form method="POST">
         <button type="submit" name="scan_doctors">Scan for New Doctors</button>
