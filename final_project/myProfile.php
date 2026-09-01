@@ -48,7 +48,7 @@ $user = mysqli_fetch_assoc($result);
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
     <title>Profile</title>
