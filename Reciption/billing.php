@@ -153,7 +153,7 @@ if(isset($_GET['search'])){
      <a href="reciption_patients.php">Patients</a>
      <a class="active" href="billing.php">Billing</a>
      <a href="reciption_queue.php">Queue</a>
-     <a href="logout">Logout</a>
+     <a href="logout.php">Logout</a>
  </div>
 
 

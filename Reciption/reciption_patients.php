@@ -219,7 +219,7 @@ margin-bottom:20px;
          <a href="reciption_patients.php" class="active">Patients</a>
          <a href="billing.php">Billing</a>
          <a href="reciption_queue.php">Queue</a>
-         <a href="logout">Logout</a>
+         <a href="logout.php">Logout</a>
         </div>
     </div>
     

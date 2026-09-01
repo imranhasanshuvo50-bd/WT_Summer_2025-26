@@ -236,9 +236,9 @@ overflow:hidden;
 
 .overview-title{
 
-background:#eaf3ff;
+background: #eaf3ff;
 
-color:#0b3d91;
+color: #0b3d91;
 
 padding:15px 20px;
 
