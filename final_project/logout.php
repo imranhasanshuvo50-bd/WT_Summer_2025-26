@@ -1,45 +1,29 @@
-
 <?php
-
 session_start();
-
 session_unset();
 session_destroy();
-
 ?>
 
 <!DOCTYPE html>
 <html>
 
 <head>
-
     <title>
         logout
     </title>
-
 </head>
 
 <body>
-
     <div class="logoutContainer">
-
-        <div id="heading">
-            <label>You are logout</label>
-        </div>
+        <div id="heading"><label> You are logout</label></div>
 
         <a href="Login.php">
-            <br>
-            <button id="loginBtn">
-                Login Again
-            </button>
+            <br><button id="loginBtn">Login Again</button>
         </a>
-
     </div>
-
 </body>
 
 <style>
-
     * {
         margin: 0;
         padding: 0;
@@ -48,9 +32,12 @@ session_destroy();
 
     body {
         display: flex;
+
         justify-content: center;
         align-items: center;
         min-height: 100vh;
+        align-items: center;
+
         background-color: #cfedfa;
         font-family: Arial, sans-serif;
     }
@@ -65,6 +52,7 @@ session_destroy();
         border-radius: 8px;
         justify-content: center;
         align-items: center;
+
     }
 
     #heading {
@@ -88,7 +76,4 @@ session_destroy();
         background-color: #0056b3;
     }
 
-</style>
-
-</html>
-
+    </html>
