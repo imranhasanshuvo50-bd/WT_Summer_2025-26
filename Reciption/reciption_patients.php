@@ -427,11 +427,7 @@ Patients
 </a>
 
 
-<a href="billing.php">
-
-Billing
-
-</a>
+<a href="billing.php">Billing</a>
 
 
 <a href="reciption_queue.php">
