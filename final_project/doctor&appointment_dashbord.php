@@ -1,5 +1,11 @@
 <?php
 session_start();
+
+$search = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $search = $_POST["search"];
+}
 ?>
 
 <!DOCTYPE HTML>
@@ -7,147 +13,182 @@ session_start();
     <head>
         <title>Doctor & Appointment</title>
     </head>
-  <body>
 
-     <div class="docappContainer">
+    <body>
 
-        <div id="heading">
-         <label>Doctor & Appointment</label>
-        </div>
+        <div class="docappContainer">
 
-        <a href="searchDoctor.php">
-         <button class="normalBtn">Search Doctor</button>
-        </a>
+            <div id="heading">
+                <label>Doctor & Appointment</label>
+            </div>
 
-        <a href="doctorProfile.php">
-             <button class="normalBtn">View Doctor Profile</button>
-        </a>
+            <form method="post">
 
-        <a href="checkAvailability.php">
-             <button class="normalBtn">Check Availability</button>
-        </a>
+                <input 
+                    type="text" 
+                    name="search" 
+                    id="searchBox"
+                    placeholder="Search Doctor, Specialization or Department"
+                    value="<?php echo htmlspecialchars($search); ?>"
+                >
 
-        <a href="bookAppointment.php"> 
-            <button class="normalBtn">Book Appointment</button> 
-        </a>
+                <button type="submit" class="searchBtn">Search</button>
 
-        <a href="appointmentStatus.php"> 
-            <button class="normalBtn">View Appointment Status</button> 
-        </a>
+            </form>
 
-        <a href="cancelAppointment.php"> 
-            <button class="normalBtn">Cancel Appointment</button>
-        </a>
-
-        <div class="actionGroup">
-            <a href="patient_dashboard.php"> 
-                <button id="backBtn">Back</button> 
+            <a href="doctorProfile.php">
+                <button class="normalBtn">View Doctor Profile</button>
             </a>
 
-            <a href="logout.php"> 
-                <button id="logoutBtn">Logout</button> 
+            <a href="checkAvailability.php">
+                <button class="normalBtn">Check Availability</button>
             </a>
+
+            <a href="bookAppointment.php"> 
+                <button class="normalBtn">Book Appointment</button> 
+            </a>
+
+            <a href="appointmentStatus.php"> 
+                <button class="normalBtn">View Appointment Status</button> 
+            </a>
+
+            <a href="cancelAppointment.php"> 
+                <button class="normalBtn">Cancel Appointment</button>
+            </a>
+
+            <div class="actionGroup">
+
+                <a href="patient_dashboard.php"> 
+                    <button id="backBtn">Back</button> 
+                </a>
+
+                <a href="logout.php"> 
+                    <button id="logoutBtn">Logout</button> 
+                </a>
+
+            </div>
+
         </div>
-        
-       </div>
 
-     <style>
 
-      * {
-           margin: 0;
-           padding: 0;
-           box-sizing: border-box;
-        }
+        <style>
 
-        body {
-            display: flex;
-            justify-content: center;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #cfedfa;
-            font-family: Arial, sans-serif;
-        }
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
 
-        .docappContainer {
-            display: flex;
-            flex-direction: column;
-            padding: 60px 50px;
-            margin: 20px;
-            background-color: #ffffff;
-            border: 2px solid #aeadad;
-            border-radius: 8px;
-            justify-content: center;
-            align-items: center;
-        }
+            body {
+                display: flex;
+                justify-content: center;
+                flex-direction: column;
+                align-items: center;
+                min-height: 100vh;
+                background-color: #cfedfa;
+                font-family: Arial, sans-serif;
+            }
 
-        #welcome {
-            color: #333;
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
+            .docappContainer {
+                display: flex;
+                flex-direction: column;
+                padding: 60px 50px;
+                margin: 20px;
+                background-color: #ffffff;
+                border: 2px solid #aeadad;
+                border-radius: 8px;
+                justify-content: center;
+                align-items: center;
+            }
 
-        #heading {
-            color: #333;
-            font-size: 24px;
-            margin-bottom: 30px;
-        }
+            #heading {
+                color: #333;
+                font-size: 24px;
+                margin-bottom: 30px;
+            }
 
-        .normalBtn {
-            width: 300px;
-            padding: 12px 20px;
-            margin: 8px;
-            font-size: 16px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+            form {
+                display: flex;
+                margin-bottom: 20px;
+            }
 
-        .normalBtn:hover {
-            background-color: #0056b3;
-        }
+            #searchBox {
+                width: 300px;
+                padding: 12px;
+                font-size: 16px;
+                border: 1px solid #aeadad;
+                border-radius: 4px;
+                outline: none;
+            }
 
-        .actionGroup {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
+            .searchBtn {
+                padding: 12px 20px;
+                margin-left: 8px;
+                font-size: 16px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
 
-        #backBtn {
-            width: 145px;
-            padding: 10px 15px;
-            font-size: 14px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+            .searchBtn:hover {
+                background-color: #0056b3;
+            }
 
-        #backBtn:hover {
-            background-color: #218838;
-        }
+            .normalBtn {
+                width: 300px;
+                padding: 12px 20px;
+                margin: 8px;
+                font-size: 16px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
 
-        #logoutBtn { 
-            width: 145px; 
-            padding: 10px 15px; 
-            font-size: 14px; 
-            background-color: #dc3545; 
-            color: white; 
-            border: none; 
-            border-radius: 4px; 
-            cursor: pointer; 
-        } 
-        
-        #logoutBtn:hover { 
-            background-color: #a71d2a; 
-        }
+            .normalBtn:hover {
+                background-color: #0056b3;
+            }
 
-      </style>
+            .actionGroup {
+                display: flex;
+                gap: 10px;
+                margin-top: 15px;
+            }
+
+            #backBtn {
+                width: 145px;
+                padding: 10px 15px;
+                font-size: 14px;
+                background-color: #28a745;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            #backBtn:hover {
+                background-color: #218838;
+            }
+
+            #logoutBtn { 
+                width: 145px; 
+                padding: 10px 15px; 
+                font-size: 14px; 
+                background-color: #dc3545; 
+                color: white; 
+                border: none; 
+                border-radius: 4px; 
+                cursor: pointer; 
+            } 
+
+            #logoutBtn:hover { 
+                background-color: #a71d2a; 
+            }
+
+        </style>
 
     </body>
-
 </html>
