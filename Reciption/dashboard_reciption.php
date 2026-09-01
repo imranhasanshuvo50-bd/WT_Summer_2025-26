@@ -180,18 +180,14 @@ margin-bottom:8px;
 }
 
 .summary-card h2{
-
 font-size:28px;
 color:#0b3d91;
 }
 
 .section-title{
-
-font-size:19px;
-
-color:#0b3d91;
-
-margin-bottom:15px;
+    font-size:19px;
+    color:#0b3d91;
+    margin-bottom:15px;
 }
 
 .actions{
