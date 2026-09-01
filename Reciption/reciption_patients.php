@@ -516,10 +516,7 @@ placeholder="P001">
 <div class="form-group">
 
 <label>Name</label>
-
-<input type="text"
-name="name">
-
+<input type="text" name="name">
 </div>
 
 
