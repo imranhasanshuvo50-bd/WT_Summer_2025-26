@@ -109,26 +109,15 @@ color:#1e293b;
 }
 
 .profile-photo{
-
 width:40px;
-
 height:40px;
-
 border-radius:50%;
-
 background:#0b3d91;
-
 color:white;
-
 display:flex;
-
 align-items:center;
-
 justify-content:center;
-
 font-weight:bold;
-
-
 }
 
 
