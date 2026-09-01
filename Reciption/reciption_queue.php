@@ -200,7 +200,7 @@ font-size:13px;
             <a href="reciption_patients.php">Patients</a>
             <a href="billing.php">Billing</a>
             <a href="reciption_queue.php" class="active">Queue</a>
-            <a href="logout">Logout</a>
+            <a href="logout.php">Logout</a>
         </div>
     </div>
     
