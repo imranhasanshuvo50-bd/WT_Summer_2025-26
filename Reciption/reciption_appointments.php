@@ -5,13 +5,10 @@ include "config.php";
 
 $showAddAppointment = false;
 
-
 if(isset($_GET['action']) && $_GET['action']=="add")
 {
     $showAddAppointment = true;
 }
-
-
 
 // SAVE APPOINTMENT
 
@@ -24,38 +21,15 @@ if(isset($_POST['save_appointment']))
     $date = $_POST['appointment_date'];
     $time = $_POST['appointment_time'];
 
-
-
-    $sql = "INSERT INTO appointments
-
-    (
-        patient_id,
-        doctor_id,
-        appointment_date,
-        appointment_time,
-        status
-    )
-
-    VALUES
-
-    (
-        '$patient_id',
-        '$doctor_id',
-        '$date',
-        '$time',
-        'Pending'
-    )";
-
+    $sql = "INSERT INTO appointments (patient_id,doctor_id,appointment_date,appointment_time,status ) VALUES ( '$patient_id', '$doctor_id', '$date', '$time', 'Pending')";
 
     mysqli_query($conn,$sql);
-
 
     header("Location: reciption_appointments.php");
 
     exit();
 
 }
-
 
 ?>
 
@@ -213,9 +187,6 @@ body{
 
 }
 
-
-
-/* CONTENT */
 
 
 .content{
@@ -469,13 +440,9 @@ tr:last-child td{
 
 }
 
-
 </style>
 
-
 </head>
-
-
 <body>
 
 
