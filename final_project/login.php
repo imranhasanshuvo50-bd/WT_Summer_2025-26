@@ -65,15 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             "/"
                         );
 
-                    } else {
-
-                        setcookie(
-                            "user-Email",
-                            "",
-                            time() - 3600,
-                            "/"
-                        );
-                    }
+                    } 
 
                     $role = strtolower($user["role"]);
 
@@ -85,7 +77,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     } elseif ($role=="receptionist") {
                         header("Location: dashboard_reciption.php");
                         exit();
-
+                    } elseif ($role == "patient") {
+                        header("Location: patient_dashboard.php");
+                        exit();
                     } elseif ($role == "doctor") {
 
                         $doctor_sql = "SELECT doctor_id FROM doctors WHERE user_id = ? LIMIT 1";

@@ -2,14 +2,44 @@
 include "config.php";
 
 if (isset($_POST["delete_user"])) {
-    $id = $_POST["id"];
-    $sql = "DELETE FROM users WHERE id='$id'";
+    $id = (int) ($_POST["id"] ?? 0);
 
-    if (mysqli_query($conn, $sql)) {
+    if ($id <= 0) {
+        die("Invalid user id.");
+    }
+
+    $user_query = mysqli_query($conn, "SELECT role FROM users WHERE id='$id' LIMIT 1");
+    $user_row = mysqli_fetch_assoc($user_query);
+    $role = $user_row["role"] ?? "";
+
+    mysqli_begin_transaction($conn);
+
+    try {
+        if ($role === "doctor" || $role === "receptionist") {
+            $doctor_result = mysqli_query($conn, "SELECT doctor_id FROM doctors WHERE user_id='$id' LIMIT 1");
+            if ($doctor_result && mysqli_num_rows($doctor_result) > 0) {
+                $doctor_row = mysqli_fetch_assoc($doctor_result);
+                $doctor_id = (int) ($doctor_row["doctor_id"] ?? 0);
+
+                if ($doctor_id > 0) {
+                    mysqli_query($conn, "DELETE FROM consultations WHERE doctor_id='$doctor_id'");
+                    mysqli_query($conn, "DELETE FROM doctors WHERE doctor_id='$doctor_id'");
+                }
+            }
+        }
+
+        $sql = "DELETE FROM users WHERE id='$id'";
+
+        if (!mysqli_query($conn, $sql)) {
+            throw new Exception(mysqli_error($conn));
+        }
+
+        mysqli_commit($conn);
         header("Location: userAccountManagement.php");
         exit();
-    } else {
-        die("Delete failed: " . mysqli_error($conn));
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        die("Delete failed: " . $e->getMessage());
     }
 }
 

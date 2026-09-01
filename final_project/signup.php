@@ -9,10 +9,11 @@ if (isset($_SESSION["user-Email"])) {
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST["name"];
-    $email = $_POST["email"];
-    $pass = $_POST["password"];
-    $role = $_POST["role"];
+    $name = trim($_POST["name"] ?? "");
+    $email = trim($_POST["email"] ?? "");
+    $pass = $_POST["password"] ?? "";
+    $role = strtolower(trim($_POST["role"] ?? ""));
+
     if ($role == "patient") {
         $status = "Active";
     } else {
@@ -27,7 +28,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 VALUES ('$name', '$email', '$pass', '$role', '$status')";
 
         if (mysqli_query($conn, $sql)) {
-            $success = "Registration successful! Please login.";
+            $user_id = mysqli_insert_id($conn);
+
+            if ($role == "patient") {
+                $patient_code = "P" . str_pad((string) $user_id, 5, "0", STR_PAD_LEFT);
+                $patient_sql = "INSERT INTO patients (user_id, patient_code, name, age, phone, email, address, doctor_id)
+                               VALUES ('$user_id', '$patient_code', '$name', NULL, NULL, '$email', NULL, NULL)";
+
+                if (!mysqli_query($conn, $patient_sql)) {
+                    $error = "Registration failed: " . mysqli_error($conn);
+                } else {
+                    $success = "Registration successful! Please login.";
+                }
+            } else {
+                $success = "Registration successful! Please login.";
+            }
         } else {
             $error = "Registration failed: " . mysqli_error($conn);
         }
