@@ -28,9 +28,6 @@ if ($user_id > 0) {
 
     $sql = "SELECT
                 c.symptoms,
-                c.temperature,
-                c.blood_pressure,
-                c.heart_rate,
                 c.diagnosis,
                 c.medical_history,
                 u.name AS doctor_name
@@ -59,7 +56,7 @@ if ($user_id > 0) {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Previous Treatment History</title>
+    <title>Treatment History Summary</title>
 </head>
 
 <body>
@@ -89,21 +86,6 @@ if ($user_id > 0) {
                 <p>
                     <b>Diagnosis:</b>
                     <?php echo htmlspecialchars($record["diagnosis"] ?? "Not Available"); ?>
-                </p>
-
-                <p>
-                    <b>Temperature:</b>
-                    <?php echo htmlspecialchars($record["temperature"] ?? "Not Available"); ?>
-                </p>
-
-                <p>
-                    <b>Blood Pressure:</b>
-                    <?php echo htmlspecialchars($record["blood_pressure"] ?? "Not Available"); ?>
-                </p>
-
-                <p>
-                    <b>Heart Rate:</b>
-                    <?php echo htmlspecialchars($record["heart_rate"] ?? "Not Available"); ?>
                 </p>
 
                 <p>
