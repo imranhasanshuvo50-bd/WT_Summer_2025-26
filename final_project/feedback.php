@@ -7,7 +7,6 @@ $email = $_SESSION["user-Email"] ?? "";
 $patient_id = 0;
 
 
-/* Logged-in patient বের করা */
 
 $sql = "SELECT p.patient_id
         FROM patients p
@@ -30,7 +29,6 @@ if ($row = mysqli_fetch_assoc($result)) {
 mysqli_stmt_close($stmt);
 
 
-/* Feedback insert */
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 

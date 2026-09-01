@@ -7,7 +7,6 @@ $email = $_SESSION["user-Email"] ?? "";
 $patient_id = 0;
 
 
-/* Logged-in patient ID বের করা */
 $sql = "SELECT p.patient_id
         FROM patients p
         INNER JOIN users u
@@ -29,7 +28,6 @@ if ($row = mysqli_fetch_assoc($result)) {
 mysqli_stmt_close($stmt);
 
 
-/* Review submit */
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $doctor_id = (int)$_POST["doctor_id"];
