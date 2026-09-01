@@ -1,26 +1,76 @@
 <?php
 
+session_start();
 include "config.php";
 
-$sql = "SELECT * FROM appointments";
+if (!isset($_SESSION["user_id"])) {
+    header("Location: login.php");
+    exit();
+}
 
-$result = mysqli_query($connection, $sql);
+if (
+    !isset($_SESSION["user_role"]) ||
+    $_SESSION["user_role"] != "doctor"
+) {
+    die("Access denied. Doctor login required.");
+}
+
+$user_id = $_SESSION["user_id"];
+$doctor_id = 0;
+
+$sql = "SELECT doctor_id
+        FROM doctors
+        WHERE user_id = ?
+        LIMIT 1";
+
+$stmt = mysqli_prepare($conn, $sql);
+
+if ($stmt) {
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
+    if ($result && mysqli_num_rows($result) > 0) {
+        $doctor = mysqli_fetch_assoc($result);
+        $doctor_id = $doctor["doctor_id"];
+    }
+
+    mysqli_stmt_close($stmt);
+}
+
+if ($doctor_id == 0) {
+    die("Doctor profile not found.");
+}
 
 $today_appointments = 0;
 $pending_consultations = 0;
 $waiting_patients = 0;
 
-while ($row = mysqli_fetch_assoc($result)) {
+$sql = "SELECT
+            SUM(CASE WHEN DATE(created_at) = CURDATE() THEN 1 ELSE 0 END) AS today_appointments,
+            SUM(CASE WHEN status = 'Pending' THEN 1 ELSE 0 END) AS pending_consultations,
+            SUM(CASE WHEN status = 'Waiting' THEN 1 ELSE 0 END) AS waiting_patients
+        FROM appointments
+        WHERE doctor_id = ?";
 
-    $today_appointments++;
+$stmt = mysqli_prepare($conn, $sql);
 
-    if ($row["status"] == "Pending") {
-        $pending_consultations++;
+if ($stmt) {
+    mysqli_stmt_bind_param($stmt, "i", $doctor_id);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
+    if ($result) {
+        $summary = mysqli_fetch_assoc($result);
+
+        $today_appointments = (int) $summary["today_appointments"];
+        $pending_consultations = (int) $summary["pending_consultations"];
+        $waiting_patients = (int) $summary["waiting_patients"];
     }
 
-    if ($row["status"] == "Waiting") {
-        $waiting_patients++;
-    }
+    mysqli_stmt_close($stmt);
 }
 
 $notifications = array(

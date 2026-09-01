@@ -1,42 +1,165 @@
-
 <?php
 session_start();
 include "config.php";
 
+if (isset($_SESSION["user_id"])) {
+
+    $role = strtolower($_SESSION["user_role"] ?? "");
+
+    if ($role == "admin") {
+        header("Location: dashbord_admin.php");
+        exit();
+    } elseif ($role == "doctor") {
+        header("Location: Doctor_dashboard.php");
+        exit();
+    } else {
+        header("Location: dashbord.php");
+        exit();
+    }
+}
+
+$error = "";
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $user_Email = $_POST["user-Email"];
-    $pass = $_POST["password"];
+    $user_Email = trim($_POST["user-Email"] ?? "");
+    $pass = $_POST["password"] ?? "";
     $remember = isset($_POST["remember"]);
 
-    $sql = "SELECT * FROM USERS WHERE EMAIL = '$user_Email'";
-    $result = mysqli_query($conn, $sql);
+    $sql = "SELECT * FROM USERS WHERE EMAIL = ? LIMIT 1";
 
-    if (mysqli_num_rows($result) > 0) {
+    $stmt = mysqli_prepare($conn, $sql);
 
-        $user = mysqli_fetch_assoc($result);
+    if ($stmt) {
 
-        if ($user["pass"] == $pass) {
+        mysqli_stmt_bind_param($stmt, "s", $user_Email);
+        mysqli_stmt_execute($stmt);
 
-            $_SESSION["user-Email"] = $user["email"];
-            $_SESSION["user_id"] = $user["id"];
+        $result = mysqli_stmt_get_result($stmt);
 
-            if ($remember) {
-                setcookie(
-                    "user-Email",$user_Email,time() + (86400 * 30),"/");
-            }
+        if ($result && mysqli_num_rows($result) > 0) {
 
-            if ($user["role"] == "admin" && $user["status"] == "Active") {
-                header("Location: dashbord_admin.php");
-                exit();
+            $user = mysqli_fetch_assoc($result);
+
+            if ($user["pass"] == $pass) {
+
+                if (strtolower($user["status"]) != "active") {
+
+                    $error = "Your account is inactive.";
+
+                } else {
+
+                    
+
+                    $_SESSION["user-Email"] = $user["email"];
+                    $_SESSION["user_id"] = $user["id"];
+                    $_SESSION["user_name"] = $user["name"];
+                    $_SESSION["user_role"] = strtolower($user["role"]);
+
+                    if ($remember) {
+
+                        setcookie(
+                            "user-Email",
+                            $user["email"],
+                            time() + (86400 * 30),
+                            "/"
+                        );
+
+                    } else {
+
+                        setcookie(
+                            "user-Email",
+                            "",
+                            time() - 3600,
+                            "/"
+                        );
+                    }
+
+                    $role = strtolower($user["role"]);
+
+                    if ($role == "admin") {
+
+                        header("Location: dashbord_admin.php");
+                        exit();
+
+                    } elseif ($role=="receptionist") {
+                        header("Location: dashboard_reciption.php");
+                        exit();
+
+                    } elseif ($role == "doctor") {
+
+                        $doctor_sql = "SELECT doctor_id FROM doctors WHERE user_id = ? LIMIT 1";
+
+                        $doctor_stmt = mysqli_prepare($conn,$doctor_sql);
+
+                        if ($doctor_stmt) {
+
+                            mysqli_stmt_bind_param(
+                                $doctor_stmt,
+                                "i",
+                                $user["id"]
+                            );
+
+                            mysqli_stmt_execute($doctor_stmt);
+
+                            $doctor_result =
+                                mysqli_stmt_get_result($doctor_stmt);
+
+                            if ($doctor_result &&mysqli_num_rows($doctor_result) > 0) {
+
+                                $doctor = mysqli_fetch_assoc($doctor_result);
+
+                                $_SESSION["doctor_id"] = $doctor["doctor_id"];
+
+                                mysqli_stmt_close($doctor_stmt);
+
+                                header(
+                                    "Location: Doctor_dashboard.php"
+                                );
+                                exit();
+
+                            } else {
+
+                                mysqli_stmt_close($doctor_stmt);
+
+                                session_unset();
+                                session_destroy();
+
+                                $error =
+                                    "Doctor profile was not found.";
+                            }
+
+                        } else {
+
+                            session_unset();
+                            session_destroy();
+
+                            $error =
+                                "Could not find doctor profile.";
+                        }
+
+                    } else {
+
+                        header("Location: dashbord.php");
+                        exit();
+                    }
+                }
+
+            } else {
+
+                $error = "Invalid user-Email or password";
             }
 
         } else {
+
             $error = "Invalid user-Email or password";
         }
 
+        mysqli_stmt_close($stmt);
+
     } else {
-        $error = "Invalid user-Email or password";
+
+        $error = "Login query failed.";
     }
 }
 ?>
@@ -54,60 +177,116 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
 
     <form method="post" action="" id="login">
+
         <div class="header">
+
             <label id="header">MediCare</label>
-            <label id="subheader">Login to your portal</label>
+
+            <label id="subheader">
+                Login to your portal
+            </label>
+
         </div>
 
         <?php if (isset($error)): ?>
-            <div class="error-message"><?php echo $error; ?></div>
+
+            <div class="error-message">
+                <?php echo htmlspecialchars($error); ?>
+            </div>
+
         <?php endif; ?>
 
 
-
         <div class="form">
-            <label for="user-Email">user-Email</label>
-            <input type="text" id="user-Email" name="user-Email" placeholder="Enter user-Email" required>
+
+            <label for="user-Email">
+                user-Email
+            </label>
+
+            <input type="text" id="user-Email" name="user-Email" placeholder="Enter user-Email" value="<?php
+            echo htmlspecialchars(
+                $_POST["user-Email"] ?? ""
+            );
+            ?>" required>
+
         </div>
 
+
         <div class="form">
-            <label for="password">Password</label>
+
+            <label for="password">
+                Password
+            </label>
+
             <div class="passwordSection">
+
                 <input type="password" id="password" name="password" placeholder="Enter password" required>
-                <button type="button" id="showPasswordBtn" onclick="viewPassword()">Show</button>
+
+                <button type="button" id="showPasswordBtn" onclick="viewPassword()">
+                    Show
+                </button>
+
             </div>
+
         </div>
+
 
         <div class="checkbox-wrapper">
+
             <input type="checkbox" name="remember" id="remember">
-            <label for="remember">Remember me</label>
+
+            <label for="remember">
+                Remember me
+            </label>
+
         </div>
 
-        <input type="submit" id="loginBtn" value="Login"><br>
+
+        <input type="submit" id="loginBtn" value="Login">
+
+        <br>
+
         <div class="link-section">
-           <br> Don't have an account? <a href="signup.php">Sign up here</a>
+
+            <br>
+            Don't have an account?
+            <a href="signup.php">Sign up here</a>
+
         </div>
+
     </form>
+
+
     <script>
+
         function viewPassword() {
-            var passwordInput = document.getElementById("password");
-            var showPasswordBtn = document.getElementById("showPasswordBtn");
+
+            var passwordInput =
+                document.getElementById("password");
+
+            var showPasswordBtn =
+                document.getElementById("showPasswordBtn");
+
             if (passwordInput.type == "password") {
+
                 passwordInput.type = "text";
                 showPasswordBtn.textContent = "Hide";
+
             } else {
+
                 passwordInput.type = "password";
                 showPasswordBtn.textContent = "Show";
             }
         }
+
     </script>
+
 
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-
         }
 
         .link-section a {
@@ -137,10 +316,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             max-width: 420px;
             border: 1px solid #cbd5e1;
             border-radius: 12px;
-
         }
+
         #link {
-           width: 100%;
+            width: 100%;
             background-color: #0284c7;
             color: white;
             border: none;
@@ -169,8 +348,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             display: block;
         }
 
-
-
         label {
             font-size: 14px;
             font-weight: 600;
@@ -190,7 +367,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             outline: none;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
-
 
         .passwordSection {
             position: relative;
@@ -212,6 +388,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-size: 14px;
             color: #64748b;
             padding: 5px;
+            cursor: pointer;
         }
 
         .checkbox-wrapper {
@@ -224,14 +401,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .checkbox-wrapper input {
             width: 16px;
             height: 16px;
-
         }
 
         .checkbox-wrapper label {
             margin-bottom: 0;
             font-size: 14px;
             font-weight: 400;
-
         }
 
         #loginBtn {
@@ -243,7 +418,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-size: 16px;
             font-weight: 600;
             border-radius: 8px;
-
+            cursor: pointer;
         }
 
         #loginBtn:hover {
@@ -261,6 +436,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             text-align: center;
         }
     </style>
+
 </body>
 
 </html>

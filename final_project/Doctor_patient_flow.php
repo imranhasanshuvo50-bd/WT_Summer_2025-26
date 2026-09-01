@@ -42,7 +42,7 @@ $stmt = mysqli_prepare($conn, $sql);
 
 if ($stmt) {
 
-    mysqli_stmt_bind_param($stmt, "i", $user_id);
+    mysqli_stmt_bind_param($stmt, "i", $doctor_id);
     mysqli_stmt_execute($stmt);
 
     $result = mysqli_stmt_get_result($stmt);
@@ -77,7 +77,7 @@ $stmt = mysqli_prepare($conn, $sql);
 
 if ($stmt) {
 
-    mysqli_stmt_bind_param($stmt, "i", $user_id);
+    mysqli_stmt_bind_param($stmt, "i", $doctor_id);
     mysqli_stmt_execute($stmt);
 
     $result = mysqli_stmt_get_result($stmt);
@@ -152,7 +152,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt,
                 "sii",
                 $new_status,
-                $user_id,
+                $doctor_id,
                 $selected_patient
             );
 
@@ -205,7 +205,7 @@ if ($selected_patient != "") {
         mysqli_stmt_bind_param(
             $stmt,
             "ii",
-            $user_id,
+            $doctor_id,
             $selected_patient
         );
 
@@ -246,7 +246,7 @@ if ($selected_patient != "") {
         mysqli_stmt_bind_param(
             $stmt,
             "ii",
-            $user_id,
+            $doctor_id,
             $selected_patient
         );
 
@@ -486,7 +486,7 @@ if ($selected_patient != "") {
 
         <hr>
 
-        <a href="Doctor_logout.php">
+        <a href="logout.php">
             Logout
         </a>
 
