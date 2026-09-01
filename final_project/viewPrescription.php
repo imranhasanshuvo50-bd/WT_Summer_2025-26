@@ -57,7 +57,6 @@ if ($user_id > 0) {
 
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>View Prescription</title>
 </head>
@@ -113,7 +112,7 @@ if ($user_id > 0) {
 
     <div class="actionGroup">
 
-        <a href="medicalRecordPrescription.php">
+        <a href="medicialrecord&prescription_dashboard.php">
             <button id="backBtn">Back</button>
         </a>
 
