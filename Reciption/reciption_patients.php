@@ -6,82 +6,25 @@ include "config.php";
 $tab = $_GET['tab'] ?? "list";
 
 
-// ADD PATIENT
-
-// ADD PATIENT
-
 if(isset($_POST['add_patient'])){
 
 
     $patient_code = $_POST['patient_code'];
 
     $name = $_POST['name'];
-
     $age = $_POST['age'];
-
     $phone = $_POST['phone'];
-
     $email = $_POST['email'];
-
     $address = $_POST['address'];
-
     $doctor_id = $_POST['doctor_id'];
-
-
-
-    // 1. Create Patient Login Account
-
-
     $password = "1234";
-
-
-    $user_sql = "INSERT INTO users
-
-    (
-    name,
-    email,
-    phone,
-    pass,
-    role,
-    status
-    )
-
-
-    VALUES
-
-    (
-
-    '$name',
-
-    '$email',
-
-    '$phone',
-
-    '$password',
-
-    'Patient',
-
-    'active'
-
-    )";
-
-
-
+    $user_sql = "INSERT INTO users (name,email,phone,pass,role,status) VALUES ('$name','$email','$phone','$password','Patient','active')";
     mysqli_query($conn,$user_sql);
 
 
 
-
-    // Get created user id
-
-
     $user_id = mysqli_insert_id($conn);
 
-
-
-
-
-    // 2. Save Patient Details
 
 
     $patient_sql = "INSERT INTO patients
@@ -134,8 +77,6 @@ if(isset($_POST['add_patient'])){
 
 
     mysqli_query($conn,$patient_sql);
-
-
 
     header("Location: reciption_patients.php");
 
