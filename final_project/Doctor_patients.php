@@ -203,7 +203,7 @@ if (isset($_GET["view"])) {
 
         <hr>
 
-        <a href="Doctor_logout.php">Logout</a>
+        <a href="logout.php">Logout</a>
 
     </div>
 
