@@ -486,7 +486,7 @@ if ($selected_patient != "") {
 
         <hr>
 
-        <a href="Doctor_logout.php">
+        <a href="logout.php">
             Logout
         </a>
 
